@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Disk Hero</string>
+
+    <!-- Home Activity -->
+    <string name="read_ext_storage_perm_explanation">This app requires to read the external storage on your device for scanning the files to provide you with disk usage statistics.</string>
+    <string name="read_ext_storage_perm_explanation_title">Permission Required</string>
+    <string name="read_ext_storage_perm_explanation_positive_btn">ALLOW</string>
+    <string name="read_ext_storage_perm_explanation_negative_btn">CANCEL</string>
+    <string name="btn_scan_text">Scan</string>
+</resources>
