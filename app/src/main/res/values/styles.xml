@@ -7,5 +7,17 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
     </style>
+    
+    <style name="CardTitleText">
+        <item name="android:includeFontPadding">false</item>
+        <item name="android:textSize">@dimen/card_title_text_size</item>
+        <item name="android:textStyle">bold</item>
+    </style>
 
+    <style name="CardTitleTextHighlighted">
+        <item name="android:includeFontPadding">false</item>
+        <item name="android:textSize">@dimen/card_title_text_size</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/card_title_text_highlight_color</item>
+    </style>
 </resources>

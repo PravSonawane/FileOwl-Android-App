@@ -7,4 +7,8 @@
     <string name="read_ext_storage_perm_explanation_positive_btn">ALLOW</string>
     <string name="read_ext_storage_perm_explanation_negative_btn">CANCEL</string>
     <string name="btn_scan_text">Scan</string>
+
+    <!-- layout_largest_files_overview.xml -->
+    <string name="text_largest_files">Largest Files</string>
+    <string name="text_largest_file_count">(Top 10)</string>
 </resources>

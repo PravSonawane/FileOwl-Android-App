@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="@dimen/horizontal_margin_standard"
+                android:layout_marginStart="@dimen/horizontal_margin_standard"
+                android:layout_marginRight="@dimen/horizontal_margin_standard"
+                android:layout_marginEnd="@dimen/horizontal_margin_standard"
+                android:layout_marginTop="@dimen/vertical_margin_standard"
+                android:layout_marginBottom="@dimen/vertical_margin_standard">
+
+    <TextView
+        android:id="@+id/lyt_largest_files_overview_title_txtVw_id"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:text="@string/text_largest_files"
+        android:text="@string/text_largest_files"
+        style="@style/CardTitleText"/>
+
+    <TextView
+        android:id="@+id/lyt_largest_files_overview_count_txtVw_id"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/lyt_largest_files_overview_title_txtVw_id"
+        android:layout_toEndOf="@id/lyt_largest_files_overview_title_txtVw_id"
+        android:layout_marginLeft="@dimen/horizontal_margin_standard"
+        android:layout_marginStart="@dimen/horizontal_margin_standard"
+        tools:text="@string/text_largest_file_count"
+        android:text="@string/text_largest_file_count"
+        style="@style/CardTitleTextHighlighted"/>
+
+
+</RelativeLayout>
