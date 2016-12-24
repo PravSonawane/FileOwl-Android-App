@@ -16,7 +16,7 @@ import android.view.View;
 import android.widget.Button;
 
 import com.merryapps.diskhero.R;
-import com.merryapps.diskhero.model.FileManager;
+import com.merryapps.diskhero.model.FileSystemUtil;
 
 public class HomeActivity extends AppCompatActivity {
 
@@ -56,7 +56,7 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     private void scan() {
-        new FileManager().getFiles(this, "");
+        new FileSystemUtil().scanFileSystem();
     }
 
     /**
@@ -85,12 +85,7 @@ public class HomeActivity extends AppCompatActivity {
      * @return {@link android.view.View.OnClickListener} for Scan button.
      */
     private View.OnClickListener newScanBtnOcl() {
-        return new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                checkPermAndScan();
-            }
-        };
+        return view -> checkPermAndScan();
     }
 
     /**

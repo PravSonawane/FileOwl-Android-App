@@ -62,7 +62,7 @@ public class ScanResult {
         this.highestFileFrequencyCollectionSize = highestFileFrequencyCollectionSize;
 
         //using linked lists here because deletion can be frequent
-        //since the size of these lists are typically small, overhead of traversal is not at play here.
+        //since the size of these lists are typically small, overhead of search is not at play here.
         largestFiles = new LinkedList<>();
         mostFrequentFtfs = new LinkedList<>();
     }
@@ -119,6 +119,7 @@ public class ScanResult {
     }
 
     private void recomputeLargestFiles(@NonNull FileStat fileStat) {
+
         if(largestFiles.size() < largeFileCollectionSize) {
             largestFiles.add(fileStat);
             if (smallestLargeFile == null) {
