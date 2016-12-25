@@ -8,10 +8,10 @@
     <dimen name="vertical_margin_smallest">4dp</dimen>
 
     <!-- layout_largest_files_overview.xml -->
-    <dimen name="card_title_text_size">14sp</dimen>
+    <dimen name="overview_title_text_size">14sp</dimen>
     <dimen name="large_file_icon_size">32dp</dimen>
-    <dimen name="large_file_name_text_size">12sp</dimen>
-    <dimen name="large_file_path_text_size">12sp</dimen>
+    <dimen name="overview_name_text_size">12sp</dimen>
+    <dimen name="overview_description_text_size">12sp</dimen>
     <dimen name="large_file_size_text_size">12sp</dimen>
     <dimen name="action_button_minWidth">0dp</dimen>
     <dimen name="action_button_minHeight">0dp</dimen>

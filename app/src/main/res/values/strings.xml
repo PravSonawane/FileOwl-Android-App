@@ -15,4 +15,19 @@
     <string name="dummy_file_path">/sdcard/emulated/0/Movies/someHugFile.avi</string>
     <string name="dummy_file_size">18.36 MB</string>
     <string name="button_view_all_text">View All</string>
+
+    <!-- layout_frequent_files_overview.xml -->
+    <string name="text_frequent_files">Most frequent files</string>
+    <string name="text_frequent_file_count">(Top 5)</string>
+    <string name="dummy_file_type">LOG</string>
+    <string name="dummy_file_type_frequency">73 files of this type found</string>
+    <string name="text_average_file_size">Average file size</string>
+    <string name="dummy_average_file_size">9.45 MB</string>
+
+    <!-- layout_average_file_size_overview.xml -->
+    <string name="dummy_total_files_scanned">18519 files scanned</string>
+
+    <!-- fragment_home.xml -->
+    <string name="text_last_scan_time_label">Last scanned</string>
+    <string name="text_last_scan_time_value">Dec 25, 2016</string>
 </resources>
