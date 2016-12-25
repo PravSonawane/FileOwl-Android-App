@@ -11,16 +11,8 @@
     android:paddingTop="@dimen/vertical_margin_standard"
     tools:context="com.merryapps.diskhero.ui.HomeActivity">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Hello World!"/>
-
-    <Button
-        android:id="@+id/fragment_home_btn_scan_id"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
-        tools:text="@string/btn_scan_text"/>
+    <FrameLayout
+        android:id="@+id/activity_home_frm_lyt_placeHolder_id"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 </RelativeLayout>

@@ -11,4 +11,8 @@
     <!-- layout_largest_files_overview.xml -->
     <string name="text_largest_files">Largest Files</string>
     <string name="text_largest_file_count">(Top 10)</string>
+    <string name="dummy_file_name">Some Huge File.avi</string>
+    <string name="dummy_file_path">/sdcard/emulated/0/Movies/someHugFile.avi</string>
+    <string name="dummy_file_size">18.36 MB</string>
+    <string name="button_view_all_text">View All</string>
 </resources>

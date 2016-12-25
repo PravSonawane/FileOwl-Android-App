@@ -6,4 +6,5 @@
 
     <!-- layout_largest_files_overview.xml -->
     <color name="card_title_text_highlight_color">#FF5722</color>
+    <color name="large_file_path_text_color">#61000000</color>
 </resources>
