@@ -3,6 +3,8 @@ package com.merryapps.diskhero.model;
 import android.support.annotation.NonNull;
 
 import java.io.File;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 /**
  * The statistics of a file.
@@ -13,6 +15,12 @@ import java.io.File;
 public class FileStat {
 
     private static final String STRING_DOT = ".";
+    private static final RoundingMode ROUNDING_MODE_HALF_UP = RoundingMode.HALF_UP;
+    private static final int ONE_KB = 1024;
+    private static final int ONE_MB = 1024 * ONE_KB;
+    private static final long ONE_GB = (long)1024 * ONE_MB;
+    private static final long ONE_TB = (long)1024 * ONE_GB;
+    private final int SCALE = 2;
 
     /**
      * The type returned by {@link FileStat#getType()} when a file's type cannot be determined.
@@ -35,7 +43,7 @@ public class FileStat {
      * @param size the size of the file in bytes (must not be < 0)
      * @throws IllegalArgumentException if arguments are invalid.
      */
-    FileStat(@NonNull final String absolutePath, long size) {
+    public FileStat(@NonNull final String absolutePath, long size) {
         if (absolutePath == null) {
             throw new IllegalArgumentException("absolutePath cannot be null");
         }
@@ -60,9 +68,22 @@ public class FileStat {
         return type;
     }
 
-    /** Returns the size in bytes */
-    long getSize() {
+    public long getSize() {
         return size;
+    }
+
+    public String getSizeUserFriendly() {
+        if (size < ONE_KB) {
+            return size + " B";
+        } else if (size < ONE_MB) {
+            return new BigDecimal((double)size/ONE_KB).setScale(SCALE,ROUNDING_MODE_HALF_UP) + " KB";
+        } else if (size < ONE_GB) {
+            return new BigDecimal((double)size/ONE_MB).setScale(SCALE,ROUNDING_MODE_HALF_UP) + " MB";
+        } else if (size < ONE_GB){
+            return new BigDecimal((double)size/ONE_TB).setScale(SCALE,ROUNDING_MODE_HALF_UP) + " GB";
+        } else {
+            return new BigDecimal((double)size/ONE_TB).setScale(SCALE,ROUNDING_MODE_HALF_UP) + " TB";
+        }
     }
 
     /**

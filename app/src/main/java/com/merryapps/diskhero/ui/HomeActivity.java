@@ -45,6 +45,7 @@ public class HomeActivity extends AppCompatActivity {
 
         //load HomeFragment
         loadHomeFragment();
+        //loadLargeFileFragment();
     }
 
     @Override
@@ -56,6 +57,12 @@ public class HomeActivity extends AppCompatActivity {
     private void loadHomeFragment() {
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.activity_home_frm_lyt_placeHolder_id, new HomeFragment())
+                .commit();
+    }
+
+    private void loadLargeFileFragment() {
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.activity_home_frm_lyt_placeHolder_id, new LargeFileListFragment())
                 .commit();
     }
 
