@@ -47,8 +47,8 @@
 
     <ImageView
         android:id="@+id/lyt_average_imgVw_id"
-        android:layout_width="@dimen/large_file_icon_size"
-        android:layout_height="@dimen/large_file_icon_size"
+        android:layout_width="@dimen/file_icon_size"
+        android:layout_height="@dimen/file_icon_size"
         android:layout_marginTop="@dimen/vertical_margin_small"
         android:src="@drawable/ic_plain_file_pink"
         android:background="@null"

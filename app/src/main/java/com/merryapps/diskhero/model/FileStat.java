@@ -37,6 +37,7 @@ public class FileStat {
     private final String name;
     private final String type;
     private final long size;
+
     /**
      * Creates a new {@link FileStat} with the given file information.
      * @param absolutePath the FQDN of the file (its absolutePath) (must not be {@code null}.
@@ -72,7 +73,16 @@ public class FileStat {
         return size;
     }
 
-    public String getSizeUserFriendly() {
+    /**
+     * Returns the size in a human readable form. For example, if size = 1024 bytes
+     * <code>
+     *     <pre>
+     *         String size = getSizeHumanReadable(); // returns 1 KB
+     *     </pre>
+     * </code>
+     * @return a {@link String}
+     */
+    public String getSizeHumanReadable() {
         if (size < ONE_KB) {
             return size + " B";
         } else if (size < ONE_MB) {
@@ -135,7 +145,8 @@ public class FileStat {
 
         FileStat fileStat = (FileStat) o;
 
-        return absolutePath != null ? absolutePath.equals(fileStat.absolutePath) : fileStat.absolutePath == null;
+        return absolutePath != null ?
+                absolutePath.equals(fileStat.absolutePath) : fileStat.absolutePath == null;
 
     }
 

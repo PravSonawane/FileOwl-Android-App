@@ -57,8 +57,7 @@ public class LargeFileListAdapter extends RecyclerView.Adapter<LargeFileListAdap
         }
         holder.fileNameTxtVw.setText(fileStat.getName());
         holder.filePathTxtVw.setText(fileStat.getAbsolutePath());
-        //holder.fileSizeTxtVw.setText(String.format(Locale.getDefault(), NUMBER_FORMAT, fileStat.getSize()));
-        holder.fileSizeTxtVw.setText(fileStat.getSizeUserFriendly());
+        holder.fileSizeTxtVw.setText(fileStat.getSizeHumanReadable());
     }
 
     @Override
