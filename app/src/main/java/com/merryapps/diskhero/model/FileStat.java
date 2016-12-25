@@ -48,18 +48,19 @@ public class FileStat {
         this.size = size;
     }
 
-    String getAbsolutePath() {
+    public String getAbsolutePath() {
         return absolutePath;
     }
 
-    String getName() {
+    public String getName() {
         return name;
     }
 
-    String getType() {
+    public String getType() {
         return type;
     }
 
+    /** Returns the size in bytes */
     long getSize() {
         return size;
     }

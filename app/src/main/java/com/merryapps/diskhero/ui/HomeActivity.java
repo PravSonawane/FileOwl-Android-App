@@ -13,14 +13,11 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.widget.Button;
 
 import com.merryapps.diskhero.R;
 import com.merryapps.diskhero.model.FileSystemUtil;
 
 public class HomeActivity extends AppCompatActivity {
-
-    private Button scanBtn;
 
     /**
      * Request code value for READ_EXTERNAL_STORAGE permission.
@@ -34,12 +31,14 @@ public class HomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
-        initViews();
+        //load HomeFragment
+        loadHomeFragment();
     }
 
-    private void initViews() {
-        scanBtn = (Button) findViewById(R.id.fragment_home_btn_scan_id);
-        scanBtn.setOnClickListener(newScanBtnOcl());
+    private void loadHomeFragment() {
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.activity_home_frm_lyt_placeHolder_id, new HomeFragment())
+                .commit();
     }
 
     @Override
