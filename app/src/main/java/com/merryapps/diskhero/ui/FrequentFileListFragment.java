@@ -10,7 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.merryapps.diskhero.R;
-import com.merryapps.diskhero.model.FileStat;
+import com.merryapps.diskhero.model.FileTypeFrequency;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,7 +46,12 @@ public class FrequentFileListFragment extends Fragment {
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this.getActivity());
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         recyclerView.setLayoutManager(linearLayoutManager);
-        List<FileStat> fileStats = new ArrayList<>();
-        recyclerView.setAdapter(new LargeFileListAdapter(getActivity(),fileStats));
+        List<FileTypeFrequency> fileTypeFrequencies = new ArrayList<>();
+        fileTypeFrequencies.add(new FileTypeFrequency("txt", 2324));
+        fileTypeFrequencies.add(new FileTypeFrequency("per", 324));
+        fileTypeFrequencies.add(new FileTypeFrequency("jpg", 24));
+        fileTypeFrequencies.add(new FileTypeFrequency("abc", 4));
+
+        recyclerView.setAdapter(new FrequentFileListAdapter(getActivity(),fileTypeFrequencies));
     }
 }

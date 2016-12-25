@@ -34,6 +34,7 @@ public class FileSystemUtil {
      */
     public boolean isExternalStorageMounted() {
         String state = Environment.getExternalStorageState();
+        Log.d(TAG, "isExternalStorageMounted: name:" + Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS));
         return state.equals(Environment.MEDIA_MOUNTED);
     }
 
@@ -53,10 +54,12 @@ public class FileSystemUtil {
      */
     public ScanResult scanFileSystem(int largeFilesCount, int highFrequecyFileCount) {
 
+        Log.d(TAG, "scanFileSystem: isExternalStorageMounted:" + isExternalStorageMounted());
+
         CountDownLatch waitLatch = new CountDownLatch(1);
         ScanResult scanResult = new ScanResult(largeFilesCount, highFrequecyFileCount);
         ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
-        Single<ScanResult> scanResultSingle = createFileEmitter(Environment.getExternalStorageDirectory())
+        Single<ScanResult> scanResultSingle = createFileEmitter(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getParentFile())
                 .toList().flatMap(accumulateIn(scanResult))
                 .subscribeOn(Schedulers.from(executor))
                 .observeOn(AndroidSchedulers.mainThread())

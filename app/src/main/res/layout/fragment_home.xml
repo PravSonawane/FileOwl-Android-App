@@ -26,6 +26,20 @@
         android:text="@string/text_last_scan_time_value"
         style="@style/LastScanValueText"/>
 
+    <Button
+        android:id="@+id/lyt_largest_files_overview_btn_viewAll_id"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/horizontal_margin_standard"
+        tools:text="SCAN"
+        android:text="SCAN"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignBaseline="@id/fragment_home_lastScanTimeValue_txtVw_id"
+        android:layout_marginEnd="@dimen/horizontal_margin_standard"
+        android:layout_marginRight="@dimen/horizontal_margin_standard"
+        style="@style/OverviewActionButton"/>
+
     <ScrollView android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/fragment_home_lastScanTimeLabel_txtVw_id"
@@ -33,7 +47,27 @@
 
         <LinearLayout android:layout_width="match_parent"
                       android:layout_height="wrap_content"
+                      android:animateLayoutChanges="true"
                       android:orientation="vertical">
+
+            <RelativeLayout
+                android:id="@+id/fragment_home_relLyt_scanProgress_id"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone">
+                <ProgressBar
+                    android:id="@+id/fragment_home_scan_prgrssBr_id"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginEnd="@dimen/horizontal_margin_standard"
+                    android:layout_marginRight="@dimen/horizontal_margin_standard"
+                    android:layout_marginTop="@dimen/horizontal_margin_small"
+                    android:layout_marginBottom="@dimen/horizontal_margin_small"
+                />
+            </RelativeLayout>
+
             <android.support.v7.widget.CardView
                 android:id="@+id/fragment_home_largest_files_crdVw_id"
                 android:layout_width="match_parent"
@@ -73,4 +107,16 @@
             </android.support.v7.widget.CardView>
         </LinearLayout>
     </ScrollView>
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fragment_home_scan_fab_id"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginRight="@dimen/horizontal_margin_standard"
+        android:layout_marginEnd="@dimen/horizontal_margin_standard"
+        android:layout_marginBottom="@dimen/vertical_margin_standard"
+        android:src="@drawable/ic_share"/>
 </RelativeLayout>

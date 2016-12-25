@@ -19,7 +19,7 @@
     <!-- layout_frequent_files_overview.xml -->
     <string name="text_frequent_files">Most frequent files</string>
     <string name="text_frequent_file_count">(Top 5)</string>
-    <string name="dummy_file_type">LOG</string>
+    <string name="dummy_file_type">LOG file</string>
     <string name="dummy_file_type_frequency">73 files of this type found</string>
     <string name="text_average_file_size">Average file size</string>
     <string name="dummy_average_file_size">9.45 MB</string>

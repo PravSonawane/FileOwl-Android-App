@@ -44,6 +44,7 @@ public class FileStat {
      * @param size the size of the file in bytes (must not be < 0)
      * @throws IllegalArgumentException if arguments are invalid.
      */
+    //TODO change this to package private
     public FileStat(@NonNull final String absolutePath, long size) {
         if (absolutePath == null) {
             throw new IllegalArgumentException("absolutePath cannot be null");

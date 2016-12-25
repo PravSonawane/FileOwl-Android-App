@@ -24,7 +24,7 @@ import java.util.Random;
  */
 public class FrequentFileListAdapter extends RecyclerView.Adapter<FrequentFileListAdapter.FrequentFileViewHolder> {
 
-    private static final String TAG = "LargeFileListAdapter";
+    private static final String TAG = "FrequentFileListAdapter";
     private static final String NUMBER_FORMAT = "%d";
     private List<FileTypeFrequency> fileTypeFrequencies;
     private Context context;
@@ -38,7 +38,7 @@ public class FrequentFileListAdapter extends RecyclerView.Adapter<FrequentFileLi
     @Override
     public FrequentFileViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         Log.d(TAG, "onCreateViewHolder() called with: parent = [" + parent + "], viewType = [" + viewType + "]");
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_large_file, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_frequent_file, parent, false);
         return new FrequentFileViewHolder(view);
     }
 

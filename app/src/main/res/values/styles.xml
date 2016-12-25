@@ -53,4 +53,12 @@
         <item name="android:textSize">@dimen/overview_title_text_size</item>
         <item name="android:textStyle">bold</item>
     </style>
+
+    <!--<style name="OverviewCard">-->
+        <!--<item name="android:foreground">?android:attr/selectableItemBackground</item>-->
+        <!--<item name="app:cardBackgroundColor">@android:color/white</item>-->
+        <!--<item name="app:cardCornerRadius">3dp</item>-->
+        <!--<item name="app:cardUseCompatPadding">true</item>-->
+        <!--<item name="app:elevation">4dp</item>-->
+    <!--</style>-->
 </resources>
