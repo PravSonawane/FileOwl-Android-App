@@ -12,6 +12,8 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.view.Menu;
 import android.view.View;
 
 import com.merryapps.diskhero.R;
@@ -31,8 +33,24 @@ public class HomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
+        //setting up the toolbar
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            toolbar.setTitleTextColor(getResources().getColor(R.color.white,null));
+        } else {
+            toolbar.setTitleTextColor(getResources().getColor(R.color.white));
+        }
+
+        setSupportActionBar(toolbar);
+
         //load HomeFragment
         loadHomeFragment();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_home,menu);
+        return super.onCreateOptionsMenu(menu);
     }
 
     private void loadHomeFragment() {

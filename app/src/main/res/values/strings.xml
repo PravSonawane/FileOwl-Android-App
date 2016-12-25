@@ -30,4 +30,8 @@
     <!-- fragment_home.xml -->
     <string name="text_last_scan_time_label">Last scanned</string>
     <string name="text_last_scan_time_value">Dec 25, 2016</string>
+
+    <!-- menu_home.xml -->
+    <string name="menu_item_share">Share</string>
+    <string name="menu_item_settings">Settings</string>
 </resources>

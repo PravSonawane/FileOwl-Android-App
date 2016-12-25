@@ -38,5 +38,5 @@
         android:layout_marginRight="@dimen/horizontal_margin_standard"
         android:layout_marginEnd="@dimen/horizontal_margin_standard"
         android:layout_marginBottom="@dimen/vertical_margin_standard"
-        android:src="@drawable/ic_plain_fie"/>
+        android:src="@drawable/ic_file_system_search"/>
 </RelativeLayout>
