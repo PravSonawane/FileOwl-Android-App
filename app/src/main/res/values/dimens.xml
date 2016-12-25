@@ -9,7 +9,7 @@
 
     <!-- layout_largest_files_overview.xml -->
     <dimen name="overview_title_text_size">14sp</dimen>
-    <dimen name="large_file_icon_size">32dp</dimen>
+    <dimen name="file_icon_size">32dp</dimen>
     <dimen name="overview_name_text_size">12sp</dimen>
     <dimen name="overview_description_text_size">12sp</dimen>
     <dimen name="large_file_size_text_size">12sp</dimen>

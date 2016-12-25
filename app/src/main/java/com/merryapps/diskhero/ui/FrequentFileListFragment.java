@@ -16,15 +16,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Fragment to show the largest files.
+ * Lists the most frequent files
  *
  * @author Pravin Sonawane (june.pravin@gmail.com)
  * @since v1.0.0
  */
 
-public class LargeFileListFragment extends Fragment {
+public class FrequentFileListFragment extends Fragment {
 
-    private static final String TAG = "LargeFileListFragment";
+    private static final String TAG = "FrequentFileListFragment";
 
     private RecyclerView recyclerView;
 

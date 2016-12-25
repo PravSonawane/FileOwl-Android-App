@@ -11,60 +11,60 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.merryapps.diskhero.R;
-import com.merryapps.diskhero.model.FileStat;
+import com.merryapps.diskhero.model.FileTypeFrequency;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Random;
 
 /**
- * Adapter for LargeFileListFragment.
+ * Adapter for FrequentFileListFragment.
  * @author Pravin Sonawane (june.pravin@gmail.com)
  * @since v1.0.0
  */
-public class LargeFileListAdapter extends RecyclerView.Adapter<LargeFileListAdapter.LargeFileViewHolder> {
+public class FrequentFileListAdapter extends RecyclerView.Adapter<FrequentFileListAdapter.FrequentFileViewHolder> {
 
     private static final String TAG = "LargeFileListAdapter";
     private static final String NUMBER_FORMAT = "%d";
-    private List<FileStat> fileStats;
+    private List<FileTypeFrequency> fileTypeFrequencies;
     private Context context;
     private Random random = new Random();
 
-    LargeFileListAdapter(Context context, List<FileStat> fileStats) {
-        this.fileStats = fileStats;
+    FrequentFileListAdapter(Context context, List<FileTypeFrequency> fileTypeFrequencies) {
+        this.fileTypeFrequencies = fileTypeFrequencies;
         this.context = context;
     }
 
     @Override
-    public LargeFileViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public FrequentFileViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         Log.d(TAG, "onCreateViewHolder() called with: parent = [" + parent + "], viewType = [" + viewType + "]");
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_large_file, parent, false);
-        return new LargeFileViewHolder(view);
+        return new FrequentFileViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(LargeFileViewHolder holder, int position) {
+    public void onBindViewHolder(FrequentFileViewHolder holder, int position) {
         Log.d(TAG, "onBindViewHolder() called with: holder = [" + holder + "], position = [" + position + "]");
-        FileStat fileStat = fileStats.get(position);
+        FileTypeFrequency fileStat = fileTypeFrequencies.get(position);
 
         bind(holder, fileStat);
     }
 
-    private void bind(LargeFileViewHolder holder, FileStat fileStat) {
+    private void bind(FrequentFileViewHolder holder, FileTypeFrequency fileTypeFrequency) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             holder.fileIconImgVw.setImageDrawable(context.getResources().getDrawable(getRandomIcon(), null));
         } else {
             holder.fileIconImgVw.setImageDrawable(context.getResources().getDrawable(getRandomIcon()));
         }
-        holder.fileNameTxtVw.setText(fileStat.getName());
-        holder.filePathTxtVw.setText(fileStat.getAbsolutePath());
-        //holder.fileSizeTxtVw.setText(String.format(Locale.getDefault(), NUMBER_FORMAT, fileStat.getSize()));
-        holder.fileSizeTxtVw.setText(fileStat.getSizeUserFriendly());
+        holder.fileTypeTxtVw.setText(fileTypeFrequency.getFileType());
+        holder.fileRequencyTxtVw.setText(
+                String.format(Locale.getDefault(), NUMBER_FORMAT, fileTypeFrequency.getFrequency()));
     }
 
     @Override
     public int getItemCount() {
         Log.d(TAG, "getItemCount() called");
-        return fileStats.size();
+        return fileTypeFrequencies.size();
     }
 
     private int getRandomIcon() {
@@ -90,19 +90,17 @@ public class LargeFileListAdapter extends RecyclerView.Adapter<LargeFileListAdap
         }
     }
 
-    static class LargeFileViewHolder extends RecyclerView.ViewHolder {
+    static class FrequentFileViewHolder extends RecyclerView.ViewHolder {
 
         private ImageView fileIconImgVw;
-        private TextView fileNameTxtVw;
-        private TextView filePathTxtVw;
-        private TextView fileSizeTxtVw;
+        private TextView fileTypeTxtVw;
+        private TextView fileRequencyTxtVw;
 
-        LargeFileViewHolder(View view) {
+        FrequentFileViewHolder(View view) {
             super(view);
-            fileIconImgVw = (ImageView) view.findViewById(R.id.item_large_file_icon_imgVw_id);
-            fileNameTxtVw = (TextView) view.findViewById(R.id.item_large_file_fileName_txtVw_id);
-            filePathTxtVw = (TextView) view.findViewById(R.id.item_large_file_filePath_txtVw_id);
-            fileSizeTxtVw = (TextView) view.findViewById(R.id.item_large_file_fileSize_txtVw_id);
+            fileIconImgVw = (ImageView) view.findViewById(R.id.item_frequent_file_icon_imgVw_id);
+            fileTypeTxtVw = (TextView) view.findViewById(R.id.item_frequent_file_fileType_txtVw_id);
+            fileRequencyTxtVw = (TextView) view.findViewById(R.id.item_frequent_file_fileFrequency_txtVw_id);
         }
     }
 

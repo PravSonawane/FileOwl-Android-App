@@ -10,7 +10,7 @@ import android.support.annotation.NonNull;
  * @since v1.0.0
  */
 
-class FileTypeFrequency {
+public class FileTypeFrequency {
     final String fileType;
     long frequency;
 
@@ -28,11 +28,11 @@ class FileTypeFrequency {
     }
 
     @NonNull
-    String getFileType() {
+    public String getFileType() {
         return fileType;
     }
 
-    long getFrequency() {
+    public long getFrequency() {
         return frequency;
     }
 

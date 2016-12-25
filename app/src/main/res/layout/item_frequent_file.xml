@@ -12,9 +12,9 @@
                 android:layout_marginBottom="@dimen/vertical_margin_standard">
 
     <ImageView
-        android:id="@+id/lyt_frequent_files_frequentFile_imgVw_id"
-        android:layout_width="@dimen/large_file_icon_size"
-        android:layout_height="@dimen/large_file_icon_size"
+        android:id="@+id/item_frequent_file_icon_imgVw_id"
+        android:layout_width="@dimen/file_icon_size"
+        android:layout_height="@dimen/file_icon_size"
         android:layout_marginTop="@dimen/vertical_margin_small"
         android:src="@drawable/ic_plain_file_pink"
         android:background="@null"
@@ -22,28 +22,28 @@
         android:layout_alignParentStart="true"/>
 
     <TextView
-        android:id="@+id/lyt_frequent_files_fileType_txtVw_id"
+        android:id="@+id/item_frequent_file_fileType_txtVw_id"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         tools:text="@string/dummy_file_type"
         android:text="@string/dummy_file_type"
         style="@style/OverviewSampleName"
-        android:layout_alignTop="@+id/lyt_frequent_files_frequentFile_imgVw_id"
-        android:layout_toRightOf="@+id/lyt_frequent_files_frequentFile_imgVw_id"
-        android:layout_toEndOf="@+id/lyt_frequent_files_frequentFile_imgVw_id"
+        android:layout_alignTop="@+id/item_frequent_file_icon_imgVw_id"
+        android:layout_toRightOf="@+id/item_frequent_file_icon_imgVw_id"
+        android:layout_toEndOf="@+id/item_frequent_file_icon_imgVw_id"
         android:layout_marginLeft="@dimen/horizontal_margin_small"
         android:layout_marginStart="@dimen/horizontal_margin_small"/>
     <TextView
-        android:id="@+id/lyt_frequent_files_fileFrequency_txtVw_id"
+        android:id="@+id/item_frequent_file_fileFrequency_txtVw_id"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         tools:text="@string/dummy_file_type_frequency"
         android:text="@string/dummy_file_type_frequency"
         style="@style/OverviewSampleDescription"
-        android:layout_below="@id/lyt_frequent_files_fileType_txtVw_id"
-        android:layout_alignBottom="@id/lyt_frequent_files_frequentFile_imgVw_id"
-        android:layout_toRightOf="@+id/lyt_frequent_files_frequentFile_imgVw_id"
-        android:layout_toEndOf="@+id/lyt_frequent_files_frequentFile_imgVw_id"
+        android:layout_below="@id/item_frequent_file_fileType_txtVw_id"
+        android:layout_alignBottom="@id/item_frequent_file_icon_imgVw_id"
+        android:layout_toRightOf="@+id/item_frequent_file_icon_imgVw_id"
+        android:layout_toEndOf="@+id/item_frequent_file_icon_imgVw_id"
         android:layout_marginLeft="@dimen/horizontal_margin_small"
         android:layout_marginStart="@dimen/horizontal_margin_small"/>
 
