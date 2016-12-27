@@ -165,7 +165,7 @@ public class FileStat implements Parcelable {
     public String toString() {
         return "File{" +
                 "absolutePath='" + absolutePath + '\'' +
-                ", size=" + size +
+                ", size=" + getSizeHumanReadable() +
                 '}';
     }
 
