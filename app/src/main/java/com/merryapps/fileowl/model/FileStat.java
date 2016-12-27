@@ -163,7 +163,7 @@ public class FileStat implements Parcelable {
 
     @Override
     public String toString() {
-        return "FileStat{" +
+        return "File{" +
                 "absolutePath='" + absolutePath + '\'' +
                 ", size=" + size +
                 '}';

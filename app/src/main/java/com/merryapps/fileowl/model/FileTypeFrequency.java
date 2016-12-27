@@ -58,7 +58,7 @@ public class FileTypeFrequency implements Parcelable {
 
     @Override
     public String toString() {
-        return "FileTypeFrequency{" +
+        return "{" +
                 "fileType='" + fileType + '\'' +
                 ", frequency=" + frequency +
                 '}';

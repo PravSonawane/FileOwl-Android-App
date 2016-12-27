@@ -14,6 +14,7 @@ public class HomeActivity extends AppCompatActivity {
     private static final String TAG = "HomeActivity";
 
     private boolean shareMenuItemEnabled = true;
+    private HomeFragment homeFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,6 +67,15 @@ public class HomeActivity extends AppCompatActivity {
         return super.onPrepareOptionsMenu(menu);
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == 1) {
+            homeFragment.share();
+            return true;
+        }
+
+        return false;
+    }
 
     @Override
     public void onBackPressed() {
@@ -93,8 +103,9 @@ public class HomeActivity extends AppCompatActivity {
                     .replace(R.id.activity_home_frm_lyt_placeHolder_id, new GreetingFragment())
                     .commit();
         } else {
+            homeFragment = new HomeFragment();
             getSupportFragmentManager().beginTransaction()
-                .replace(R.id.activity_home_frm_lyt_placeHolder_id, new HomeFragment())
+                .replace(R.id.activity_home_frm_lyt_placeHolder_id, homeFragment)
                 .commit();
         }
     }

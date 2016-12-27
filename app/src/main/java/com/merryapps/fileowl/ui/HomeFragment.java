@@ -488,10 +488,47 @@ public class HomeFragment extends Fragment {
         ((HomeActivity)getActivity()).setShareMenuItemEnabled(false);
     }
 
-
-
     void setScanResult(ScanResult scanResult) {
         this.scanResult = scanResult;
+    }
+
+    public void share() {
+        Log.d(TAG, "share() called");
+        Intent shareIntent = new Intent();
+        shareIntent.setAction(Intent.ACTION_SEND);
+        shareIntent.putExtra(Intent.EXTRA_SUBJECT, "File Owl: Latest scan statistics");
+        shareIntent.putExtra(Intent.EXTRA_TEXT, shareMessageGenerator());
+        shareIntent.setType("text/plain");
+        startActivity(Intent.createChooser(shareIntent, "SEND TO"));
+    }
+
+    private String shareMessageGenerator() {
+        String newLine = "\n";
+        String colon = ":";
+
+        String separator = "------------------------------------------------";
+        return  "Scan statistics" +
+                newLine +
+                separator +
+                newLine +
+                "File Scanned" +
+                colon +
+                scanResult.getTotalFilesScanned() +
+                newLine +
+                "Average file size" +
+                colon +
+                scanResult.getAverageFileSizeHumanReadable() +
+                newLine +
+                "Largest files:" +
+                colon +
+                scanResult.getFileStats().toString() +
+                newLine +
+                "Frequent files:" +
+                colon +
+                scanResult.getMostFrequentFileTypes().toString() +
+                newLine +
+                separator;
+
     }
 
     /**
