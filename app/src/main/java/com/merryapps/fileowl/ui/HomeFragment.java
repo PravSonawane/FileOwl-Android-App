@@ -69,11 +69,12 @@ public class HomeFragment extends Fragment {
     private CardView largestFilesCrdVw;
     private CardView frequentFilesCrdVw;
     private CardView averageFileSizeCrdVw;
-    private ProgressBar scanPrgrssBr;
 
     //scan statistics
     private TextView lastScanTimeTxtVw;
     private TextView scanStatusTxtVw;
+    private ProgressBar scanPrgrssBr;
+    private Button stopScanBtn;
 
     //largest files overview
     private TextView largestFileNameTxtVw;
@@ -101,7 +102,13 @@ public class HomeFragment extends Fragment {
         initViews(view);
         initFields();
 
-        if (this.getArguments() != null) {
+        if (savedInstanceState != null) {
+            ScanResult scanResult = (ScanResult) savedInstanceState.getParcelable("SCAN_RESULT");
+            if (scanResult != null) {
+                this.scanResult = scanResult;
+                this.setupViewWithScanResult(scanResult);
+            }
+        } else if (this.getArguments() != null) {
             String message = this.getArguments().getString("MESSAGE");
             if (message != null && message.equals("SCAN_REQUESTED")) {
                 getActivity().getPreferences(MODE_PRIVATE).edit().putBoolean("IS_FIRST_TIME_SCAN",false).apply();
@@ -180,12 +187,14 @@ public class HomeFragment extends Fragment {
         frequentFilesCrdVw = (CardView) view.findViewById(R.id.fragment_home_frequent_files_crdVw_id);
         averageFileSizeCrdVw = (CardView) view.findViewById(R.id.fragment_home_average_file_size_crdVw_id);
 
-        //progress bar
-        scanPrgrssBr = (ProgressBar) view.findViewById(R.id.lyt_scan_stat_scanStatus_prgRssBr_id);
-
         //scan statistics
         lastScanTimeTxtVw = (TextView) view.findViewById(R.id.lyt_scan_stat_lastScannedValue_txtVw_id);
         scanStatusTxtVw = (TextView) view.findViewById(R.id.lyt_scan_stat_stanStatusValue_txtVw_id);
+        scanPrgrssBr = (ProgressBar) view.findViewById(R.id.lyt_scan_stat_scanStatus_prgRssBr_id);
+        stopScanBtn = (Button) view.findViewById(R.id.lyt_scan_stat_btn_scanStop_id);
+        scanPrgrssBr.setVisibility(GONE);
+        stopScanBtn.setVisibility(GONE);
+        stopScanBtn.setOnClickListener(newStopScanBtnOcl());
 
         //init largest files overview section
         largestFileNameTxtVw = (TextView) view.findViewById(R.id.item_large_file_fileName_txtVw_id);
@@ -228,6 +237,8 @@ public class HomeFragment extends Fragment {
         setLargestFilesOverviewSection(scanResult);
         setFrequentFilesOverviewSection(scanResult);
         setAverageFileSizeSection(scanResult);
+        onScanCompleteFab();
+        onScanCompleteShare();
     }
 
     private boolean doesDataExist() {
@@ -267,6 +278,13 @@ public class HomeFragment extends Fragment {
         return view -> checkPermAndScan();
     }
 
+    private View.OnClickListener newStopScanBtnOcl() {
+        return view -> {
+            getActivity().stopService(new Intent(getActivity(), FileScanService.class));
+            onScanComplete();
+        };
+    }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
 
@@ -286,6 +304,7 @@ public class HomeFragment extends Fragment {
         getActivity().startService(new Intent(getActivity(), FileScanService.class));
         onScanInProgressShare();
         onScanInProgressFab();
+        onScanInProgressViewAll();
     }
 
     /**
@@ -410,8 +429,8 @@ public class HomeFragment extends Fragment {
     }
 
     private void setAverageFileSizeSection(ScanResult scanResult) {
-        averageFileSizeTxtVw.setText(String.format(Locale.getDefault(),"%d",scanResult.getAverageFileSize()));
-        totalFilesScannedTxtVw.setText(String.format(Locale.getDefault(),"%d",scanResult.getTotalFilesScanned()));
+        averageFileSizeTxtVw.setText(String.format(Locale.getDefault(),"%s %s", "Average file size:", scanResult.getAverageFileSizeHumanReadable()));
+        totalFilesScannedTxtVw.setText(String.format(Locale.getDefault(),"%s %s","Total files scanned:", scanResult.getTotalFilesScanned()));
     }
 
     private void saveScanResult(ScanResult scanResult) {
@@ -431,8 +450,21 @@ public class HomeFragment extends Fragment {
         largestFilesCrdVw.setVisibility(VISIBLE);
         frequentFilesCrdVw.setVisibility(VISIBLE);
         averageFileSizeCrdVw.setVisibility(VISIBLE);
+        scanPrgrssBr.setVisibility(GONE);
+        stopScanBtn.setVisibility(GONE);
         onScanCompleteFab();
         onScanCompleteShare();
+        onScanCompleteViewAll();
+    }
+
+    private void onScanInProgressViewAll() {
+        largestFilesViewAllBtn.setEnabled(false);
+        frequentFilesViewAllBtn.setEnabled(false);
+    }
+
+    private void onScanCompleteViewAll() {
+        largestFilesViewAllBtn.setEnabled(true);
+        frequentFilesViewAllBtn.setEnabled(true);
     }
 
     private void onScanCompleteFab() {
@@ -444,9 +476,8 @@ public class HomeFragment extends Fragment {
 
     private void onScanInProgressFab() {
         scanFab.setEnabled(false);
-        scanFab.setImageDrawable(getActivity().getResources().getDrawable(R.drawable.ic_stop_scan));
-        scanFab.setBackgroundTintList(ColorStateList.valueOf(
-                getResources().getColor(R.color.stop_scan_fab_color)));
+        scanPrgrssBr.setVisibility(VISIBLE);
+        stopScanBtn.setVisibility(VISIBLE);
     }
 
     private void onScanCompleteShare() {
@@ -493,6 +524,7 @@ public class HomeFragment extends Fragment {
                     homeFragment.scanStatusTxtVw.setTextColor(ContextCompat.getColor(homeFragment.getActivity(), R.color.scan_in_progress_color));
                     homeFragment.onScanInProgressFab();
                     homeFragment.onScanInProgressShare();
+                    homeFragment.onScanInProgressViewAll();
                     return;
                 }
 
@@ -511,12 +543,26 @@ public class HomeFragment extends Fragment {
                             DateUtils.WEEK_IN_MILLIS, 0));
                     homeFragment.scanStatusTxtVw.setText(R.string.lyt_scan_scanStatusValue_scanError);
                     homeFragment.scanStatusTxtVw.setTextColor(ContextCompat.getColor(homeFragment.getActivity(), R.color.scan_error_color));
+                    homeFragment.onScanComplete();
+                    return;
+                }
+
+                if (status == ScanStatus.SCAN_CANCELLED) {
+                    homeFragment.lastScanTimeTxtVw.setText(DateUtils.getRelativeDateTimeString(
+                            homeFragment.getActivity(),
+                            new Date().getTime(),
+                            DateUtils.MINUTE_IN_MILLIS,
+                            DateUtils.WEEK_IN_MILLIS, 0));
+                    homeFragment.onScanComplete();
+                    homeFragment.scanStatusTxtVw.setText(R.string.lyt_scan_scanStatusValue_scanCancelled);
+                    homeFragment.scanStatusTxtVw.setTextColor(ContextCompat.getColor(homeFragment.getActivity(), R.color.scan_error_color));
                     return;
                 }
 
                 if (status == ScanStatus.SCAN_COMPLETE) {
                     homeFragment.onScanComplete();
                     homeFragment.onScanCompleteShare();
+                    homeFragment.onScanCompleteViewAll();
                 }
 
                 assert scanResult != null;

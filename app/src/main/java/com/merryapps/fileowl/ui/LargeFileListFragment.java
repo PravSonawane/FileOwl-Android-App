@@ -8,6 +8,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.merryapps.fileowl.R;
 import com.merryapps.fileowl.model.ScanResult;
@@ -26,6 +27,8 @@ public class LargeFileListFragment extends Fragment {
     private static final String TAG = "LargeFileListFragment";
 
     private RecyclerView recyclerView;
+    private TextView titleTxtVw;
+
 
     @Nullable
     @Override
@@ -34,8 +37,8 @@ public class LargeFileListFragment extends Fragment {
 
         initViews(view);
 
-        if (this.getArguments() != null
-                && this.getArguments().getParcelable("SCAN_RESULT") != null) {
+          if (this.getArguments() != null
+            && this.getArguments().getParcelable("SCAN_RESULT") != null) {
             ScanResult scanResult = this.getArguments().getParcelable("SCAN_RESULT");
             assert scanResult != null;
             ((LargeFileListAdapter)recyclerView.getAdapter()).setFileStats(scanResult.getFileStats());
@@ -45,6 +48,8 @@ public class LargeFileListFragment extends Fragment {
     }
 
     private void initViews(View view) {
+        titleTxtVw = (TextView) view.findViewById(R.id.fragment_list_title_txtVw_id);
+        titleTxtVw.setText(R.string.fragment_list_title_largest_files);
         initRecyclerView(view);
     }
 

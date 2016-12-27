@@ -16,8 +16,7 @@ public class FileTypeFrequency implements Parcelable {
     private final String fileType;
     private long frequency;
 
-    //TODO change this to package private
-    public FileTypeFrequency(@NonNull String fileType, long frequency) {
+    FileTypeFrequency(@NonNull String fileType, long frequency) {
         if (frequency < 0) {
             throw new IllegalArgumentException("frequency must be >= 0:" + frequency);
         }

@@ -7,7 +7,7 @@ import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 
 /**
- * //TODO add description here
+ * Unit test cases for {@link FileTypeFrequency}
  *
  * @author Pravin Sonawane (june.pravin@gmail.com)
  * @since v1.0.0

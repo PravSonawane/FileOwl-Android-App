@@ -81,4 +81,16 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 
+    <Button
+        android:id="@+id/lyt_scan_stat_btn_scanStop_id"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/horizontal_margin_standard"
+        tools:text="@string/button_scanStop_text"
+        android:text="@string/button_scanStop_text"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_below="@id/lyt_scan_stat_scanStatus_prgRssBr_id"
+        style="@style/OverviewActionButton"/>
+
 </RelativeLayout>

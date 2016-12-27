@@ -30,8 +30,26 @@ public class HomeActivity extends AppCompatActivity {
 
         setSupportActionBar(toolbar);
 
-        //load HomeFragment
-        loadFragment();
+        if (savedInstanceState == null) {
+            //load HomeFragment
+            loadFragment();
+        }
+
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putBoolean("SHARED_MENU_ITEM_ENABLED",shareMenuItemEnabled);
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        if (savedInstanceState != null) {
+            shareMenuItemEnabled = savedInstanceState.getBoolean("SHARED_MENU_ITEM_ENABLED");
+        }
+
+        super.onRestoreInstanceState(savedInstanceState);
     }
 
     @Override

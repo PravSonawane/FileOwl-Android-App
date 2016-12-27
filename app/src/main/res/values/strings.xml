@@ -52,5 +52,11 @@
     <string name="lyt_scan_scanStatusValue_computing">Computing</string>
     <string name="lyt_scan_scanStatusValue_scanInProgress">Scan in progress</string>
     <string name="lyt_scan_scanStatusValue_scanError">Scan error</string>
+    <string name="lyt_scan_scanStatusValue_scanCancelled">Scan cancelled</string>
     <string name="lyt_scan_scanStatusValue_scanComplete">Scan complete</string>
+
+    <!-- misc -->
+    <string name="fragment_list_title_largest_files">Largest Files</string>
+    <string name="fragment_list_title_frequent_files">Most Frequent Files</string>
+    <string name="button_scanStop_text">STOP SCAN</string>
 </resources>

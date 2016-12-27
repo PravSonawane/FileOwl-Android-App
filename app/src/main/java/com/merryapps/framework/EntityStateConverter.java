@@ -3,7 +3,9 @@ package com.merryapps.framework;
 import de.greenrobot.dao.converter.PropertyConverter;
 
 /**
- * Created by mephisto on 2/27/16.
+ * Converter for entity state.
+ * @author Pravin Sonawane (june.pravin@gmail.com)
+ * @since v1.0.0
  */
 public class EntityStateConverter implements PropertyConverter<EntityState, String> {
 

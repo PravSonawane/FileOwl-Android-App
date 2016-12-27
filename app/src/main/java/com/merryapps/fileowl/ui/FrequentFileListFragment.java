@@ -8,6 +8,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.merryapps.fileowl.R;
 import com.merryapps.fileowl.model.FileTypeFrequency;
@@ -25,9 +26,10 @@ import java.util.List;
 
 public class FrequentFileListFragment extends Fragment {
 
-    private static final String TAG = "FrequentFileListFragment";
+    private static final String TAG = "FrequentFileFragment";
 
     private RecyclerView recyclerView;
+    private TextView titleTxtVw;
 
     @Nullable
     @Override
@@ -47,6 +49,8 @@ public class FrequentFileListFragment extends Fragment {
     }
 
     private void initViews(View view) {
+        titleTxtVw = (TextView) view.findViewById(R.id.fragment_list_title_txtVw_id);
+        titleTxtVw.setText(R.string.fragment_list_title_frequent_files);
         initRecyclerView(view);
     }
 
@@ -56,11 +60,6 @@ public class FrequentFileListFragment extends Fragment {
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         recyclerView.setLayoutManager(linearLayoutManager);
         List<FileTypeFrequency> fileTypeFrequencies = new ArrayList<>();
-        fileTypeFrequencies.add(new FileTypeFrequency("txt", 2324));
-        fileTypeFrequencies.add(new FileTypeFrequency("per", 324));
-        fileTypeFrequencies.add(new FileTypeFrequency("jpg", 24));
-        fileTypeFrequencies.add(new FileTypeFrequency("abc", 4));
-
         recyclerView.setAdapter(new FrequentFileListAdapter(getActivity(),fileTypeFrequencies));
     }
 }

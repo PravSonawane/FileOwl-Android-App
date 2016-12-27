@@ -14,7 +14,7 @@ import java.io.InputStream;
 import java.util.Properties;
 
 /**
- * //TODO add description here
+ * Inits DB, provides references to factories.
  *
  * @author Pravin Sonawane (june.pravin@gmail.com)
  * @since v1.0.0

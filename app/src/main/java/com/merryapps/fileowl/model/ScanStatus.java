@@ -1,11 +1,11 @@
 package com.merryapps.fileowl.model;
 
 /**
- * //TODO add description here
+ * The status of a scan
  *
  * @author Pravin Sonawane (june.pravin@gmail.com)
  * @since v1.0.0
- */ //TODO add description here
+ */
 public enum ScanStatus {
     NO_SCAN_DATA,
     NOT_SCANNING,

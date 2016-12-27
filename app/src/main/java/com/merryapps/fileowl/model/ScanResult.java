@@ -5,6 +5,8 @@ import android.os.Parcelable;
 import android.support.annotation.NonNull;
 
 import java.io.File;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -20,6 +22,13 @@ import java.util.concurrent.atomic.AtomicLong;
 public class ScanResult implements Parcelable {
 
     private static final String TAG = "ScanResult";
+
+    private static final RoundingMode ROUNDING_MODE_HALF_UP = RoundingMode.HALF_UP;
+    private static final int ONE_KB = 1024;
+    private static final int ONE_MB = 1024 * ONE_KB;
+    private static final long ONE_GB = (long)1024 * ONE_MB;
+    private static final long ONE_TB = (long)1024 * ONE_GB;
+    private static final int SCALE = 2;
 
     private AtomicLong totalFilesScanned;
     private AtomicLong totalFileSize;
@@ -108,6 +117,21 @@ public class ScanResult implements Parcelable {
 
     public synchronized long getTotalFilesScanned() {
         return totalFilesScanned.get();
+    }
+
+    public synchronized String getAverageFileSizeHumanReadable() {
+        long size = getAverageFileSize();
+        if (size < ONE_KB) {
+            return size + " B";
+        } else if (size < ONE_MB) {
+            return new BigDecimal((double)size/ONE_KB).setScale(SCALE,ROUNDING_MODE_HALF_UP) + " KB";
+        } else if (size < ONE_GB) {
+            return new BigDecimal((double)size/ONE_MB).setScale(SCALE,ROUNDING_MODE_HALF_UP) + " MB";
+        } else if (size < ONE_TB){
+            return new BigDecimal((double)size/ONE_GB).setScale(SCALE,ROUNDING_MODE_HALF_UP) + " GB";
+        } else {
+            return new BigDecimal((double)size/ONE_TB) + " TB";
+        }
     }
 
     public synchronized long getAverageFileSize() {

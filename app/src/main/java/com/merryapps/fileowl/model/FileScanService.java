@@ -18,7 +18,6 @@ import static com.merryapps.fileowl.model.ScanStatus.SCAN_ERROR;
 
 /**
  * A service that scans the external storage.
- * //TODO add how this service should be called
  *
  * @author Pravin Sonawane (june.pravin@gmail.com)
  * @since v1.0.0
@@ -46,6 +45,7 @@ public class FileScanService extends IntentService {
 
     private FileSystemUtil fileSystemUtil;
     private int scannerThreadCount = 1;
+    private HandlerThread scannerThread;
 
     public FileScanService() {
         super("FileScanService");
@@ -56,9 +56,7 @@ public class FileScanService extends IntentService {
     protected void onHandleIntent(Intent intent) {
         Log.d(TAG, "onHandleIntent() called with: intent = [" + intent + "]");
 
-
-
-        HandlerThread scannerThread = new HandlerThread("ScannerThread-" + scannerThreadCount++);
+        scannerThread = new HandlerThread("ScannerThread-" + scannerThreadCount++);
         scannerThread.start();
         Handler scannerHandler = new Handler(scannerThread.getLooper());
         scannerHandler.post(() -> fileSystemUtil.scanFileSystem());
@@ -83,6 +81,7 @@ public class FileScanService extends IntentService {
 
         //send file scan status
         send(fileSystemUtil.getScanResult());
+        managerCompat.cancel(1);
 
 
     }
@@ -105,5 +104,17 @@ public class FileScanService extends IntentService {
                 .setOngoing(true)
                 .setAutoCancel(true)
                 .build();
+    }
+
+    @Override
+    public void onDestroy() {
+        Log.d(TAG, "onDestroy() called");
+        fileSystemUtil.stopScan();
+        if (scannerThread != null) {
+            scannerThread.quit();
+            scannerThread.interrupt();
+            stopSelf();
+        }
+        super.onDestroy();
     }
 }
