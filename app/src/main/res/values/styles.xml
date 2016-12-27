@@ -40,7 +40,7 @@
         <item name="android:minWidth">@dimen/action_button_minWidth</item>
         <item name="android:minHeight">@dimen/action_button_minHeight</item>
         <item name="android:background">@android:color/transparent</item>
-        <item name="android:textColor">#2196F3</item>
+        <item name="android:textColor">@color/btn_action_color</item>
     </style>
 
     <style name="LastScanLabelText">
@@ -53,12 +53,23 @@
         <item name="android:textSize">@dimen/overview_title_text_size</item>
         <item name="android:textStyle">bold</item>
     </style>
+    <style name="GreetingsText">
+        <item name="android:includeFontPadding">false</item>
+        <item name="android:textSize">@dimen/greetings_text_size</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/greetings_text_color</item>
+    </style>
+    <style name="GreetingsInfoText">
+        <item name="android:includeFontPadding">false</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">@dimen/greetings_info_text_size</item>
+        <item name="android:textColor">@color/greetings_text_color</item>
+    </style>
 
-    <!--<style name="OverviewCard">-->
-        <!--<item name="android:foreground">?android:attr/selectableItemBackground</item>-->
-        <!--<item name="app:cardBackgroundColor">@android:color/white</item>-->
-        <!--<item name="app:cardCornerRadius">3dp</item>-->
-        <!--<item name="app:cardUseCompatPadding">true</item>-->
-        <!--<item name="app:elevation">4dp</item>-->
-    <!--</style>-->
+    <style name="ScanStatValue">
+        <item name="android:includeFontPadding">false</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">@dimen/overview_name_text_size</item>
+    </style>
+
 </resources>

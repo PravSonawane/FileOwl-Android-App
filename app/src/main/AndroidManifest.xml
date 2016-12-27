@@ -1,17 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="com.merryapps.diskhero">
+          package="com.merryapps.fileowl">
 
     <!-- Permission required to read file system -->
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
 
     <application
+        android:name="com.merryapps.FileOwlApp"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".ui.HomeActivity">
+        <activity android:name="com.merryapps.fileowl.ui.HomeActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
@@ -19,7 +20,7 @@
             </intent-filter>
         </activity>
 
-        <service android:name=".model.FileScanService"/>
+        <service android:name="com.merryapps.fileowl.model.FileScanService"/>
     </application>
 
 </manifest>

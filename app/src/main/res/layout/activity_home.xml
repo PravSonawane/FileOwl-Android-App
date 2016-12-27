@@ -5,7 +5,7 @@
     android:id="@+id/activity_home"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.merryapps.diskhero.ui.HomeActivity">
+    tools:context="com.merryapps.fileowl.ui.HomeActivity">
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/home_lyt_appbar"
@@ -20,11 +20,6 @@
     <FrameLayout
         android:id="@+id/activity_home_frm_lyt_placeHolder_id"
         android:layout_below="@id/home_lyt_appbar"
-        android:layout_marginLeft="@dimen/horizontal_margin_small"
-        android:layout_marginRight="@dimen/horizontal_margin_small"
-        android:layout_marginStart="@dimen/horizontal_margin_small"
-        android:layout_marginEnd="@dimen/horizontal_margin_small"
-        android:layout_marginTop="@dimen/vertical_margin_standard"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 </RelativeLayout>

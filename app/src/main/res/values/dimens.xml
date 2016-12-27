@@ -15,4 +15,8 @@
     <dimen name="large_file_size_text_size">12sp</dimen>
     <dimen name="action_button_minWidth">0dp</dimen>
     <dimen name="action_button_minHeight">0dp</dimen>
+
+    <!-- greetings_no_data.xml -->
+    <dimen name="greetings_text_size">18sp</dimen>
+    <dimen name="greetings_info_text_size">14sp</dimen>
 </resources>

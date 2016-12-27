@@ -3,7 +3,12 @@
                 xmlns:tools="http://schemas.android.com/tools"
                 android:orientation="vertical"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="match_parent"
+                android:layout_marginLeft="@dimen/horizontal_margin_small"
+                android:layout_marginRight="@dimen/horizontal_margin_small"
+                android:layout_marginStart="@dimen/horizontal_margin_small"
+                android:layout_marginEnd="@dimen/horizontal_margin_small"
+                android:layout_marginTop="@dimen/vertical_margin_standard">
 
     <TextView
         android:id="@+id/fragment_list_title_txtVw_id"

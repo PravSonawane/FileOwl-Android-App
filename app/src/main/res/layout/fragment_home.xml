@@ -1,48 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
-    <TextView
-        android:id="@+id/fragment_home_lastScanTimeLabel_txtVw_id"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/vertical_margin_standard"
-        tools:text="@string/text_last_scan_time_label"
-        android:text="@string/text_last_scan_time_label"
-        style="@style/LastScanLabelText"/>
-
-    <TextView
-        android:id="@+id/fragment_home_lastScanTimeValue_txtVw_id"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_toRightOf="@id/fragment_home_lastScanTimeLabel_txtVw_id"
-        android:layout_toEndOf="@id/fragment_home_lastScanTimeLabel_txtVw_id"
-        android:layout_marginLeft="@dimen/horizontal_margin_small"
-        tools:text="@string/text_last_scan_time_value"
-        android:text="@string/text_last_scan_time_value"
-        style="@style/LastScanValueText"/>
-
-    <Button
-        android:id="@+id/lyt_largest_files_overview_btn_viewAll_id"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/horizontal_margin_standard"
-        tools:text="SCAN"
-        android:text="SCAN"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignBaseline="@id/fragment_home_lastScanTimeValue_txtVw_id"
-        android:layout_marginEnd="@dimen/horizontal_margin_standard"
-        android:layout_marginRight="@dimen/horizontal_margin_standard"
-        style="@style/OverviewActionButton"/>
+    android:layout_height="match_parent"
+    android:layout_marginLeft="@dimen/horizontal_margin_small"
+    android:layout_marginRight="@dimen/horizontal_margin_small"
+    android:layout_marginStart="@dimen/horizontal_margin_small"
+    android:layout_marginEnd="@dimen/horizontal_margin_small"
+    android:layout_marginTop="@dimen/vertical_margin_standard">
 
     <ScrollView android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/fragment_home_lastScanTimeLabel_txtVw_id"
                 android:layout_marginBottom="@dimen/vertical_margin_standard">
 
         <LinearLayout android:layout_width="match_parent"
@@ -50,23 +19,17 @@
                       android:animateLayoutChanges="true"
                       android:orientation="vertical">
 
-            <RelativeLayout
-                android:id="@+id/fragment_home_relLyt_scanProgress_id"
+            <android.support.v7.widget.CardView
+                android:id="@+id/fragment_home_scanStat_crdVw_id"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:visibility="gone">
-                <ProgressBar
-                    android:id="@+id/fragment_home_scan_prgrssBr_id"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentEnd="true"
-                    android:layout_alignParentRight="true"
-                    android:layout_marginEnd="@dimen/horizontal_margin_standard"
-                    android:layout_marginRight="@dimen/horizontal_margin_standard"
-                    android:layout_marginTop="@dimen/horizontal_margin_small"
-                    android:layout_marginBottom="@dimen/horizontal_margin_small"
-                />
-            </RelativeLayout>
+                android:foreground="?android:attr/selectableItemBackground"
+                app:cardBackgroundColor="@android:color/white"
+                app:cardCornerRadius="3dp"
+                app:cardUseCompatPadding="true"
+                app:elevation="4dp">
+                <include layout="@layout/layout_scan_stat"/>
+            </android.support.v7.widget.CardView>
 
             <android.support.v7.widget.CardView
                 android:id="@+id/fragment_home_largest_files_crdVw_id"
@@ -118,5 +81,5 @@
         android:layout_marginRight="@dimen/horizontal_margin_standard"
         android:layout_marginEnd="@dimen/horizontal_margin_standard"
         android:layout_marginBottom="@dimen/vertical_margin_standard"
-        android:src="@drawable/ic_share"/>
+        android:src="@drawable/ic_file_system_search"/>
 </RelativeLayout>

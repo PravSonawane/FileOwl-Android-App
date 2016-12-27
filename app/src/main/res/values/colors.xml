@@ -6,8 +6,17 @@
 
     <!-- misc -->
     <color name="white">#FFFFFFFF</color>
+    <color name="btn_action_color">#2196F3</color>
+    <color name="scan_in_progress_color">#FFC107</color>
+    <color name="scan_complete_color">#8BC34A</color>
+    <color name="scan_error_color">#F44336</color>
+    <color name="scan_cancelled_color">#FF5722</color>
 
     <!-- layout_largest_files_overview.xml -->
     <color name="overview_title_text_highlight_color">#FF5722</color>
     <color name="overview_description_text_color">#61000000</color>
+
+
+    <!-- fragment_no_data.xml -->
+    <color name="greetings_text_color">#8A000000</color>
 </resources>

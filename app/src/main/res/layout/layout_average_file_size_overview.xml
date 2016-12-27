@@ -21,7 +21,7 @@
         style="@style/OverviewTitleText"/>
 
     <TextView
-        android:id="@+id/lyt_average_fileType_txtVw_id"
+        android:id="@+id/lyt_average_fileSize_txtVw_id"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         tools:text="@string/dummy_average_file_size"
@@ -33,13 +33,13 @@
         android:layout_marginLeft="@dimen/horizontal_margin_small"
         android:layout_marginStart="@dimen/horizontal_margin_small"/>
     <TextView
-        android:id="@+id/lyt_average_fileFrequency_txtVw_id"
+        android:id="@+id/lyt_average_totalFilesScanned_txtVw_id"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         tools:text="@string/dummy_total_files_scanned"
         android:text="@string/dummy_total_files_scanned"
         style="@style/OverviewSampleDescription"
-        android:layout_below="@id/lyt_average_fileType_txtVw_id"
+        android:layout_below="@id/lyt_average_fileSize_txtVw_id"
         android:layout_toRightOf="@+id/lyt_average_imgVw_id"
         android:layout_toEndOf="@+id/lyt_average_imgVw_id"
         android:layout_marginLeft="@dimen/horizontal_margin_small"
