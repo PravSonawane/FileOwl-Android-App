@@ -70,7 +70,9 @@ public class HomeActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == 1) {
-            homeFragment.share();
+            if (homeFragment != null) {
+                homeFragment.share();
+            }
             return true;
         }
 
