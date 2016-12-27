@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 
 import com.merryapps.fileowl.R;
 import com.merryapps.fileowl.model.FileTypeFrequency;
+import com.merryapps.fileowl.model.ScanResult;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,6 +35,14 @@ public class FrequentFileListFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_list, null);
 
         initViews(view);
+
+        if (this.getArguments() != null
+            && this.getArguments().getParcelable("SCAN_RESULT") != null) {
+                ScanResult scanResult = this.getArguments().getParcelable("SCAN_RESULT");
+                assert scanResult != null;
+                ((FrequentFileListAdapter)recyclerView.getAdapter()).setFileTypeFrequencies(scanResult.getMostFrequentFileTypes());
+                recyclerView.getAdapter().notifyDataSetChanged();
+        }
         return view;
     }
 

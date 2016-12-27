@@ -32,6 +32,7 @@ public class ScanResult implements Parcelable {
     private int largeFileCollectionSize;
     private int highestFileFrequencyCollectionSize;
 
+
     /**
      * Creates a new {@link ScanResult} to collect the scan data.
      * Calling this constructor is same as calling {@code new ScanResult(10,5)}

@@ -89,6 +89,10 @@ public class LargeFileListAdapter extends RecyclerView.Adapter<LargeFileListAdap
         }
     }
 
+    void setFileStats(List<FileStat> fileStats) {
+        this.fileStats = fileStats;
+    }
+
     static class LargeFileViewHolder extends RecyclerView.ViewHolder {
 
         private ImageView fileIconImgVw;

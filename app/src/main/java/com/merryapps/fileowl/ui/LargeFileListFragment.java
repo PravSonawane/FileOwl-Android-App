@@ -10,10 +10,9 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.merryapps.fileowl.R;
-import com.merryapps.fileowl.model.FileStat;
+import com.merryapps.fileowl.model.ScanResult;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Fragment to show the largest files.
@@ -34,6 +33,14 @@ public class LargeFileListFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_list, null);
 
         initViews(view);
+
+        if (this.getArguments() != null
+                && this.getArguments().getParcelable("SCAN_RESULT") != null) {
+            ScanResult scanResult = this.getArguments().getParcelable("SCAN_RESULT");
+            assert scanResult != null;
+            ((LargeFileListAdapter)recyclerView.getAdapter()).setFileStats(scanResult.getFileStats());
+            recyclerView.getAdapter().notifyDataSetChanged();
+        }
         return view;
     }
 
@@ -46,7 +53,6 @@ public class LargeFileListFragment extends Fragment {
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this.getActivity());
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         recyclerView.setLayoutManager(linearLayoutManager);
-        List<FileStat> fileStats = new ArrayList<>();
-        recyclerView.setAdapter(new LargeFileListAdapter(getActivity(),fileStats));
+        recyclerView.setAdapter(new LargeFileListAdapter(getActivity(),new ArrayList<>()));
     }
 }

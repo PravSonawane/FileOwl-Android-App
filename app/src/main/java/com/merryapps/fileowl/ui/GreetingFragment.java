@@ -24,7 +24,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.merryapps.fileowl.R;
-import com.merryapps.fileowl.model.FileScanService;
 
 /**
  * Backs up the Greetings/No data screen
@@ -74,7 +73,7 @@ public class GreetingFragment extends Fragment {
                 if (grantResults.length >= 1
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     Log.v(TAG, "onRequestPermissionsResult: Permission granted.");
-                    startScanService();
+                    requestScan();
                 } else {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                         Snackbar.make(scanFab, R.string.no_permissions_text, Snackbar.LENGTH_LONG)
@@ -93,22 +92,25 @@ public class GreetingFragment extends Fragment {
         }
     }
 
-    private void startScanService() {
-        Log.v(TAG, "startScanService: Starting file startScanService");
-        getActivity().startService(new Intent(getActivity(), FileScanService.class));
-        this.getActivity().getSupportFragmentManager().beginTransaction()
-            .replace(R.id.activity_home_frm_lyt_placeHolder_id, new HomeFragment())
-            .commitAllowingStateLoss();
+    private void requestScan() {
+
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("MESSAGE", "SCAN_REQUESTED");
+        HomeFragment fragment = new HomeFragment();
+        fragment.setArguments(bundle);
+        getActivity().getSupportFragmentManager().beginTransaction()
+                .replace(R.id.activity_home_frm_lyt_placeHolder_id, fragment)
+                .commitAllowingStateLoss();
     }
 
     /**
      * Check if the user has the READ_EXTERNAL_STORAGE permission on M
-     * and above and prompt if requried.
+     * and above and prompt if required.
      */
     private void checkPermAndScan() {
 
         if (isAllowed(Manifest.permission.READ_EXTERNAL_STORAGE)) {
-            startScanService();
+            requestScan();
         } else {
             if (shouldShowRationale(Manifest.permission.READ_EXTERNAL_STORAGE)) {
                 AlertDialog dialog = createAlertDialog();

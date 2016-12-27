@@ -14,7 +14,6 @@ import com.merryapps.fileowl.R;
 import com.merryapps.fileowl.model.FileTypeFrequency;
 
 import java.util.List;
-import java.util.Locale;
 import java.util.Random;
 
 /**
@@ -25,7 +24,6 @@ import java.util.Random;
 public class FrequentFileListAdapter extends RecyclerView.Adapter<FrequentFileListAdapter.FrequentFileViewHolder> {
 
     private static final String TAG = "FrequentFileListAdapter";
-    private static final String NUMBER_FORMAT = "%d";
     private List<FileTypeFrequency> fileTypeFrequencies;
     private Context context;
     private Random random = new Random();
@@ -45,9 +43,9 @@ public class FrequentFileListAdapter extends RecyclerView.Adapter<FrequentFileLi
     @Override
     public void onBindViewHolder(FrequentFileViewHolder holder, int position) {
         Log.d(TAG, "onBindViewHolder() called with: holder = [" + holder + "], position = [" + position + "]");
-        FileTypeFrequency fileStat = fileTypeFrequencies.get(position);
+        FileTypeFrequency fileTypeFrequency = fileTypeFrequencies.get(position);
 
-        bind(holder, fileStat);
+        bind(holder, fileTypeFrequency);
     }
 
     private void bind(FrequentFileViewHolder holder, FileTypeFrequency fileTypeFrequency) {
@@ -56,9 +54,14 @@ public class FrequentFileListAdapter extends RecyclerView.Adapter<FrequentFileLi
         } else {
             holder.fileIconImgVw.setImageDrawable(context.getResources().getDrawable(getRandomIcon()));
         }
-        holder.fileTypeTxtVw.setText(fileTypeFrequency.getFileType());
+
+        holder.fileTypeTxtVw.setText(
+                String.format("%s %s", fileTypeFrequency.getFileType(),
+                        context.getString(R.string.file_type_suffix)));
         holder.fileRequencyTxtVw.setText(
-                String.format(Locale.getDefault(), NUMBER_FORMAT, fileTypeFrequency.getFrequency()));
+                String.format("%s %s", fileTypeFrequency.getFrequency(),
+                        context.getString(R.string.file_frequency_suffix))
+        );
     }
 
     @Override
@@ -88,6 +91,10 @@ public class FrequentFileListAdapter extends RecyclerView.Adapter<FrequentFileLi
             default:
                 return R.drawable.ic_plain_file_teal;
         }
+    }
+
+    void setFileTypeFrequencies(List<FileTypeFrequency> fileTypeFrequencies) {
+        this.fileTypeFrequencies = fileTypeFrequencies;
     }
 
     static class FrequentFileViewHolder extends RecyclerView.ViewHolder {

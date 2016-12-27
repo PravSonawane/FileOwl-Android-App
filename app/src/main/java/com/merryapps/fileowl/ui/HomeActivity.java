@@ -11,6 +11,8 @@ import com.merryapps.fileowl.R;
 
 public class HomeActivity extends AppCompatActivity {
 
+    private static final String TAG = "HomeActivity";
+
     private boolean shareMenuItemEnabled = true;
 
     @Override
@@ -29,7 +31,7 @@ public class HomeActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         //load HomeFragment
-        loadHomeFragment();
+        loadFragment();
     }
 
     @Override
@@ -46,6 +48,17 @@ public class HomeActivity extends AppCompatActivity {
         return super.onPrepareOptionsMenu(menu);
     }
 
+
+    @Override
+    public void onBackPressed() {
+
+        if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
+            getSupportFragmentManager().popBackStackImmediate();
+        } else {
+            finish();
+        }
+    }
+
     /**
      * Enables/disables the 'Share' menu item. To be used by fragments.
      * @param enabled the new status
@@ -55,13 +68,16 @@ public class HomeActivity extends AppCompatActivity {
         invalidateOptionsMenu();
     }
 
-    private void loadHomeFragment() {
-//        getSupportFragmentManager().beginTransaction()
-//                .replace(R.id.activity_home_frm_lyt_placeHolder_id, new HomeFragment())
-//                .commit();
+    private void loadFragment() {
 
+        if (getPreferences(MODE_PRIVATE).getBoolean("IS_FIRST_TIME_SCAN", true)) {
             getSupportFragmentManager().beginTransaction()
-            .replace(R.id.activity_home_frm_lyt_placeHolder_id, new GreetingFragment())
-            .commit();
+                    .replace(R.id.activity_home_frm_lyt_placeHolder_id, new GreetingFragment())
+                    .commit();
+        } else {
+            getSupportFragmentManager().beginTransaction()
+                .replace(R.id.activity_home_frm_lyt_placeHolder_id, new HomeFragment())
+                .commit();
+        }
     }
 }

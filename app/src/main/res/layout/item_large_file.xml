@@ -22,7 +22,7 @@
 
     <TextView
         android:id="@+id/item_large_file_fileName_txtVw_id"
-        android:layout_width="wrap_content"
+        android:layout_width="192dp"
         android:layout_height="wrap_content"
         tools:text="@string/dummy_file_name"
         android:text="@string/dummy_file_name"
@@ -31,7 +31,10 @@
         android:layout_toRightOf="@+id/item_large_file_icon_imgVw_id"
         android:layout_toEndOf="@+id/item_large_file_icon_imgVw_id"
         android:layout_marginLeft="@dimen/horizontal_margin_small"
-        android:layout_marginStart="@dimen/horizontal_margin_small"/>
+        android:layout_marginStart="@dimen/horizontal_margin_small"
+        android:scrollHorizontally="true"
+        android:ellipsize="end"
+        android:maxLines="1"/>
     <TextView
         android:id="@+id/item_large_file_filePath_txtVw_id"
         android:layout_width="wrap_content"
@@ -39,7 +42,6 @@
         tools:text="@string/dummy_file_path"
         android:text="@string/dummy_file_path"
         style="@style/OverviewSampleDescription"
-        android:layout_alignBottom="@id/item_large_file_icon_imgVw_id"
         android:layout_below="@id/item_large_file_fileName_txtVw_id"
         android:layout_toRightOf="@+id/item_large_file_icon_imgVw_id"
         android:layout_toEndOf="@+id/item_large_file_icon_imgVw_id"
@@ -55,7 +57,7 @@
         style="@style/LargeFileSize"
         android:layout_alignBaseline="@+id/item_large_file_fileName_txtVw_id"
         android:layout_alignBottom="@+id/item_large_file_fileName_txtVw_id"
-        android:layout_alignParentRight="true" 
+        android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"/>
     
 </RelativeLayout>

@@ -8,6 +8,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.content.res.ColorStateList;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -25,8 +26,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -42,6 +41,7 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.Locale;
 
+import static android.content.Context.MODE_PRIVATE;
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 
@@ -89,21 +89,32 @@ public class HomeFragment extends Fragment {
     //average file size
     private TextView averageFileSizeTxtVw;
     private TextView totalFilesScannedTxtVw;
+    private ScanResult scanResult;
 
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        Log.d(TAG, "onCreateView() called with: inflater = [" + inflater + "], container = [" + container + "], savedInstanceState = [" + savedInstanceState + "]");
         View view = inflater.inflate(R.layout.fragment_home, container,false);
 
         initViews(view);
         initFields();
 
-        if (!doesDataExist()) {
-            setupViewForNoData();
-        }
+        if (this.getArguments() != null) {
+            String message = this.getArguments().getString("MESSAGE");
+            if (message != null && message.equals("SCAN_REQUESTED")) {
+                getActivity().getPreferences(MODE_PRIVATE).edit().putBoolean("IS_FIRST_TIME_SCAN",false).apply();
+                setupViewForNoData();
+                scan();
+            }
+        } else {
+            //not a first time scan
+            ScanResult scanResult = getFactory().backupManager().getLastScanResult();
+            setScanResult(scanResult);
+            setupViewWithScanResult(scanResult);
 
-        ScanResult scanResult = getFactory().backupManager().getLastScanResult();
+        }
 
         receiver = new FileScanBroadcastReceiver(this);
         return view;
@@ -111,15 +122,52 @@ public class HomeFragment extends Fragment {
 
     @Override
     public void onResume() {
+        Log.d(TAG, "onResume() called");
         getActivity().registerReceiver(receiver, new IntentFilter(FileScanService.SCAN_STATUS_ACTION));
+
+        if (scanResult != null) {
+            setupViewWithScanResult(scanResult);
+        } else {
+            ScanResult scanResult = getFactory().backupManager().getLastScanResult();
+            setupViewWithScanResult(scanResult);
+        }
         super.onResume();
 
     }
 
     @Override
     public void onPause() {
+        Log.d(TAG, "onPause() called");
         getActivity().unregisterReceiver(receiver);
         super.onPause();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        Log.d(TAG, "onSaveInstanceState() called with: outState = [" + outState + "]");
+        if (scanResult != null) {
+            Log.d(TAG, "onSaveInstanceState: scanResult:" + scanResult);
+            outState.putParcelable("SCAN_RESULT", scanResult);
+        }
+
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+        Log.d(TAG, "onViewStateRestored() called with: savedInstanceState = [" + savedInstanceState + "]");
+        if (savedInstanceState != null) {
+            ScanResult scanResult = (ScanResult) savedInstanceState.getParcelable("SCAN_RESULT");
+            if (scanResult != null) {
+                this.scanResult = scanResult;
+                this.setupViewWithScanResult(scanResult);
+            }
+        } else {
+            ScanResult scanResult = getFactory().backupManager().getLastScanResult();
+            this.scanResult = scanResult;
+            this.setupViewWithScanResult(scanResult);
+        }
+        super.onViewStateRestored(savedInstanceState);
     }
 
     private void initViews(View view) {
@@ -174,6 +222,14 @@ public class HomeFragment extends Fragment {
         averageFileSizeCrdVw.setVisibility(GONE);
     }
 
+    private void setupViewWithScanResult(ScanResult scanResult) {
+        scanStatusTxtVw.setText(R.string.lyt_scan_scanStatusValue_scanComplete);
+        scanStatusTxtVw.setTextColor(ContextCompat.getColor(getActivity(),R.color.scan_complete_color));
+        setLargestFilesOverviewSection(scanResult);
+        setFrequentFilesOverviewSection(scanResult);
+        setAverageFileSizeSection(scanResult);
+    }
+
     private boolean doesDataExist() {
         return getActivity().getPreferences(Context.MODE_PRIVATE).getBoolean("DATA_EXISTS", false);
     }
@@ -183,22 +239,31 @@ public class HomeFragment extends Fragment {
     }
 
     private View.OnClickListener newLargestFilesViewAllOcl() {
-        return view -> this.getActivity().getSupportFragmentManager().beginTransaction()
-                .replace(R.id.activity_home_frm_lyt_placeHolder_id, new LargeFileListFragment())
-                .addToBackStack("LargeFileListFragment").commit();
+        return view -> {
+            LargeFileListFragment fragment = new LargeFileListFragment();
+            Bundle arguments = new Bundle();
+            arguments.putParcelable("SCAN_RESULT",scanResult);
+            fragment.setArguments(arguments);
+            this.getActivity().getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.activity_home_frm_lyt_placeHolder_id, fragment)
+                    .addToBackStack("LargeFileListFragment").commit();
+        };
     }
 
     private View.OnClickListener newFrequentFilesViewAllOcl() {
-        return view -> this.getActivity().getSupportFragmentManager().beginTransaction()
-                .replace(R.id.activity_home_frm_lyt_placeHolder_id, new FrequentFileListFragment())
-                .addToBackStack("FrequentFileListFragment").commit();
+        return view -> {
+            FrequentFileListFragment fragment = new FrequentFileListFragment();
+            Bundle arguments = new Bundle();
+            arguments.putParcelable("SCAN_RESULT",scanResult);
+            fragment.setArguments(arguments);
+            this.getActivity().getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.activity_home_frm_lyt_placeHolder_id, fragment)
+                    .addToBackStack("FrequentFileListFragment").commit();
+        };
     }
 
     private View.OnClickListener newScanFabOcl() {
         Log.d(TAG, "newScanFabOcl() called");
-        Animation animation = AnimationUtils.loadAnimation(this.getActivity(), R.anim.anim_scan_progress);
-        scanFab.setAnimation(animation);
-        animation.start();
         return view -> checkPermAndScan();
     }
 
@@ -219,9 +284,8 @@ public class HomeFragment extends Fragment {
     private void scan() {
         Log.v(TAG, "scan: Starting file scan");
         getActivity().startService(new Intent(getActivity(), FileScanService.class));
-        ((HomeActivity)getActivity()).setShareMenuItemEnabled(false);
-        //scanFab.setEnabled(false);
-        //TODO animate FAB here. Show rotating refresh arrows
+        onScanInProgressShare();
+        onScanInProgressFab();
     }
 
     /**
@@ -356,6 +420,49 @@ public class HomeFragment extends Fragment {
         Log.d(TAG, "saveScanResult: save complete");
     }
 
+    private void onScanComplete() {
+        lastScanTimeTxtVw.setText(DateUtils.getRelativeDateTimeString(
+                getActivity(),
+                new Date().getTime(),
+                DateUtils.MINUTE_IN_MILLIS,
+                DateUtils.WEEK_IN_MILLIS, 0));
+        scanStatusTxtVw.setText(R.string.lyt_scan_scanStatusValue_scanComplete);
+        scanStatusTxtVw.setTextColor(ContextCompat.getColor(getActivity(), R.color.scan_complete_color));
+        largestFilesCrdVw.setVisibility(VISIBLE);
+        frequentFilesCrdVw.setVisibility(VISIBLE);
+        averageFileSizeCrdVw.setVisibility(VISIBLE);
+        onScanCompleteFab();
+        onScanCompleteShare();
+    }
+
+    private void onScanCompleteFab() {
+        scanFab.setEnabled(true);
+        scanFab.setImageDrawable(getActivity().getResources().getDrawable(R.drawable.ic_file_system_search));
+        scanFab.setBackgroundTintList(ColorStateList.valueOf(
+                getResources().getColor(R.color.colorAccent)));
+    }
+
+    private void onScanInProgressFab() {
+        scanFab.setEnabled(false);
+        scanFab.setImageDrawable(getActivity().getResources().getDrawable(R.drawable.ic_stop_scan));
+        scanFab.setBackgroundTintList(ColorStateList.valueOf(
+                getResources().getColor(R.color.stop_scan_fab_color)));
+    }
+
+    private void onScanCompleteShare() {
+        ((HomeActivity)getActivity()).setShareMenuItemEnabled(true);
+    }
+
+    private void onScanInProgressShare() {
+        ((HomeActivity)getActivity()).setShareMenuItemEnabled(false);
+    }
+
+
+
+    void setScanResult(ScanResult scanResult) {
+        this.scanResult = scanResult;
+    }
+
     /**
      * A broadcast receiver to receive file system scan udpates from the {@link FileScanService}.
      * Handles the following broadcasted messages:
@@ -383,7 +490,9 @@ public class HomeFragment extends Fragment {
                 if (status == ScanStatus.SCANNING_FILE_SYSTEM) {
                     homeFragment.lastScanTimeTxtVw.setText(R.string.lyt_scan_last_scanned_value_text);
                     homeFragment.scanStatusTxtVw.setText(R.string.lyt_scan_scanStatusValue_scanInProgress);
-                    homeFragment.scanStatusTxtVw.setTextColor(ContextCompat.getColor(homeFragment.getActivity(),R.color.scan_in_progress_color));
+                    homeFragment.scanStatusTxtVw.setTextColor(ContextCompat.getColor(homeFragment.getActivity(), R.color.scan_in_progress_color));
+                    homeFragment.onScanInProgressFab();
+                    homeFragment.onScanInProgressShare();
                     return;
                 }
 
@@ -399,23 +508,15 @@ public class HomeFragment extends Fragment {
                             homeFragment.getActivity(),
                             new Date().getTime(),
                             DateUtils.MINUTE_IN_MILLIS,
-                            DateUtils.WEEK_IN_MILLIS,0));
+                            DateUtils.WEEK_IN_MILLIS, 0));
                     homeFragment.scanStatusTxtVw.setText(R.string.lyt_scan_scanStatusValue_scanError);
-                    homeFragment.scanStatusTxtVw.setTextColor(ContextCompat.getColor(homeFragment.getActivity(),R.color.scan_error_color));
+                    homeFragment.scanStatusTxtVw.setTextColor(ContextCompat.getColor(homeFragment.getActivity(), R.color.scan_error_color));
                     return;
                 }
 
                 if (status == ScanStatus.SCAN_COMPLETE) {
-                    homeFragment.lastScanTimeTxtVw.setText(DateUtils.getRelativeDateTimeString(
-                            homeFragment.getActivity(),
-                            new Date().getTime(),
-                            DateUtils.MINUTE_IN_MILLIS,
-                            DateUtils.WEEK_IN_MILLIS,0));
-                    homeFragment.scanStatusTxtVw.setText(R.string.lyt_scan_scanStatusValue_scanComplete);
-                    homeFragment.scanStatusTxtVw.setTextColor(ContextCompat.getColor(homeFragment.getActivity(),R.color.scan_complete_color));
-                    homeFragment.largestFilesCrdVw.setVisibility(VISIBLE);
-                    homeFragment.frequentFilesCrdVw.setVisibility(VISIBLE);
-                    homeFragment.averageFileSizeCrdVw.setVisibility(VISIBLE);
+                    homeFragment.onScanComplete();
+                    homeFragment.onScanCompleteShare();
                 }
 
                 assert scanResult != null;
@@ -423,6 +524,7 @@ public class HomeFragment extends Fragment {
                 homeFragment.setFrequentFilesOverviewSection(scanResult);
                 homeFragment.setAverageFileSizeSection(scanResult);
                 homeFragment.saveScanResult(scanResult);
+                homeFragment.setScanResult(scanResult);
 
 
             }
