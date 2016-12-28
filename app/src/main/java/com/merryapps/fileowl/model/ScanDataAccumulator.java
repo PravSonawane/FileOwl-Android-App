@@ -1,11 +1,8 @@
 package com.merryapps.fileowl.model;
 
-import android.os.Parcel;
-import android.os.Parcelable;
 import android.support.annotation.NonNull;
 
 import java.io.File;
-import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -14,14 +11,15 @@ import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Collects the result of a scan operation.
- * This class is not thread safe.
+ * This class is thread safe. Updates and gets on this class are synchronized on the object instance.
+ * It is expected that this object will be updated by multiple threads scanning the file system.
  *
  * @author Pravin Sonawane (june.pravin@gmail.com)
  * @since v1.0.0
  */
-public class ScanResult implements Parcelable {
+public class ScanDataAccumulator {
 
-    private static final String TAG = "ScanResult";
+    private static final String TAG = "ScanDataAccumulator";
 
     private static final RoundingMode ROUNDING_MODE_HALF_UP = RoundingMode.HALF_UP;
     private static final int ONE_KB = 1024;
@@ -43,15 +41,15 @@ public class ScanResult implements Parcelable {
 
 
     /**
-     * Creates a new {@link ScanResult} to collect the scan data.
-     * Calling this constructor is same as calling {@code new ScanResult(10,5)}
+     * Creates a new {@link ScanDataAccumulator} to collect the scan data.
+     * Calling this constructor is same as calling {@code new ScanDataAccumulator(10,5)}
      */
-    ScanResult() {
+    ScanDataAccumulator() {
         this(10, 5);
     }
 
     /**
-     * Creates a new {@link ScanResult} to collect the scan data.
+     * Creates a new {@link ScanDataAccumulator} to collect the scan data.
      * The size of the collections of largest files and higest file frequencies can be controlled
      * by the parameters to this constructor.
      *
@@ -66,7 +64,7 @@ public class ScanResult implements Parcelable {
      * @param highestFileFrequencyCollectionSize the max number of file types to be termed as high frequency
      * @throws IllegalArgumentException if arguments are out of allowed value range
      */
-    ScanResult(int largeFileCollectionSize, int highestFileFrequencyCollectionSize) {
+    ScanDataAccumulator(int largeFileCollectionSize, int highestFileFrequencyCollectionSize) {
         if (largeFileCollectionSize < 1 || largeFileCollectionSize > 10) {
             throw new IllegalArgumentException("largeFileCollectionSize out of allowed range (1,10):" + largeFileCollectionSize);
         }
@@ -86,27 +84,6 @@ public class ScanResult implements Parcelable {
         this.totalFileSize = new AtomicLong();
     }
 
-    /**
-     * Creates a {@link ScanResult} with the given data. This constructor is only for some of
-     * this package's classes. Other usages might be indeterminate.
-     * @param totalFilesScanned the total number of files scanned
-     * @param totalFileSize the total of sizes of all files scanned
-     * @param fileStats list of largest files
-     * @param frequentFiles list of most frequent files
-     */
-    ScanResult(long totalFilesScanned, long totalFileSize,
-               @NonNull List<FileStat> fileStats, @NonNull List<FileTypeFrequency> frequentFiles) {
-        this.totalFilesScanned = new AtomicLong(totalFilesScanned);
-        this.totalFileSize = new AtomicLong(totalFileSize);
-        this.fileStats = fileStats;
-        this.frequentFiles = frequentFiles;
-
-        this.smallestLargeFile = fileStats.isEmpty()
-                ? null : getFileStats().get(getFileStats().size()-1); //sorts in descending
-        this.leastFrequentFtf = frequentFiles.isEmpty()
-                ? null : getMostFrequentFileTypes().get(getMostFrequentFileTypes().size()-1); //sorts in descending
-    }
-
     public synchronized int getLargeFileCollectionSize() {
         return largeFileCollectionSize;
     }
@@ -119,21 +96,6 @@ public class ScanResult implements Parcelable {
         return totalFilesScanned.get();
     }
 
-    public synchronized String getAverageFileSizeHumanReadable() {
-        long size = getAverageFileSize();
-        if (size < ONE_KB) {
-            return size + " B";
-        } else if (size < ONE_MB) {
-            return new BigDecimal((double)size/ONE_KB).setScale(SCALE,ROUNDING_MODE_HALF_UP) + " KB";
-        } else if (size < ONE_GB) {
-            return new BigDecimal((double)size/ONE_MB).setScale(SCALE,ROUNDING_MODE_HALF_UP) + " MB";
-        } else if (size < ONE_TB){
-            return new BigDecimal((double)size/ONE_GB).setScale(SCALE,ROUNDING_MODE_HALF_UP) + " GB";
-        } else {
-            return new BigDecimal((double)size/ONE_TB) + " TB";
-        }
-    }
-
     public synchronized long getAverageFileSize() {
         if (totalFilesScanned.get() == 0) {
             return 0;
@@ -141,7 +103,7 @@ public class ScanResult implements Parcelable {
 
         /*
          * Dynamically calculating here because the average need not be calculated
-         * for every call to ScanResult.add(file).
+         * for every call to ScanDataAccumulator.add(file).
          */
         return totalFileSize.get() / totalFilesScanned.get();
     }
@@ -263,7 +225,7 @@ public class ScanResult implements Parcelable {
 
     @Override
     synchronized public String toString() {
-        return "ScanResult{" +
+        return "ScanDataAccumulator{" +
                 "totalFilesScanned=" + totalFilesScanned +
                 ", totalFileSize=" + totalFileSize +
                 ", fileStats=" + fileStats +
@@ -274,44 +236,4 @@ public class ScanResult implements Parcelable {
                 ", highestFileFrequencyCollectionSize=" + highestFileFrequencyCollectionSize +
                 '}';
     }
-
-    protected ScanResult(Parcel in) {
-        fileStats = in.createTypedArrayList(FileStat.CREATOR);
-        frequentFiles = in.createTypedArrayList(FileTypeFrequency.CREATOR);
-        smallestLargeFile = in.readParcelable(FileStat.class.getClassLoader());
-        leastFrequentFtf = in.readParcelable(FileTypeFrequency.class.getClassLoader());
-        largeFileCollectionSize = in.readInt();
-        highestFileFrequencyCollectionSize = in.readInt();
-        totalFilesScanned = new AtomicLong(in.readLong());
-        totalFileSize = new AtomicLong(in.readLong());
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeTypedList(fileStats);
-        dest.writeTypedList(frequentFiles);
-        dest.writeParcelable(smallestLargeFile, flags);
-        dest.writeParcelable(leastFrequentFtf, flags);
-        dest.writeInt(largeFileCollectionSize);
-        dest.writeInt(highestFileFrequencyCollectionSize);
-        dest.writeLong(totalFilesScanned.get());
-        dest.writeLong(totalFileSize.get());
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    public static final Creator<ScanResult> CREATOR = new Creator<ScanResult>() {
-        @Override
-        public ScanResult createFromParcel(Parcel in) {
-            return new ScanResult(in);
-        }
-
-        @Override
-        public ScanResult[] newArray(int size) {
-            return new ScanResult[size];
-        }
-    };
 }

@@ -78,12 +78,18 @@ public class FileOwlDaoGenerator {
     }
 
     private static void describeScanStatEntityTable(Entity entity) {
+
+        final String SCAN_STATUS_CONVERTER_FQDN = DAO_PACKAGE_NAME + ".ScanStatusConverter";
+        final String SCAN_FQDN = "com.merryapps.fileowl.model.ScanStatus";
+
         entity.addIdProperty();
         entity.setTableName(SCAN_STAT);
         entity.implementsInterface(ENTITY_INTERFACE_FQDN);
         entity.addLongProperty("totalFilesScanned").unique().notNull();
         entity.addLongProperty("averageFileSize").unique().notNull();
         entity.addLongProperty("scanTime").unique().notNull();
+        entity.addStringProperty("scanStatus").unique()
+            .customType(SCAN_FQDN, SCAN_STATUS_CONVERTER_FQDN).notNull();
         entity.addStringProperty("entityState")
                 .customType(ENTITY_STATE_FQDN, ENTITY_STATE_CONVERTER_FQDN).notNull();
     }

@@ -2,6 +2,7 @@ package com.merryapps.fileowl.ui;
 
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -70,8 +71,15 @@ public class HomeActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == 1) {
-            if (homeFragment != null) {
-                homeFragment.share();
+            Fragment fragment = getSupportFragmentManager().getFragments().get(0);
+            if (fragment instanceof GreetingFragment) {
+                ((GreetingFragment)fragment).share();
+            } else if (fragment instanceof HomeFragment) {
+                ((HomeFragment)fragment).share();
+            } else if (fragment instanceof FrequentFileListFragment) {
+                ((FrequentFileListFragment)fragment).share();
+            } else if (fragment instanceof LargeFileListFragment) {
+                ((LargeFileListFragment)fragment).share();
             }
             return true;
         }
@@ -85,6 +93,7 @@ public class HomeActivity extends AppCompatActivity {
         if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
             getSupportFragmentManager().popBackStackImmediate();
         } else {
+            ((HomeFragment) getSupportFragmentManager().getFragments().get(0)).stopScan();
             finish();
         }
     }

@@ -1,18 +1,22 @@
 package com.merryapps.fileowl.ui;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.merryapps.FileOwlApp;
 import com.merryapps.fileowl.R;
+import com.merryapps.fileowl.model.BackupManager;
+import com.merryapps.fileowl.model.FileOwlManagerFactory;
 import com.merryapps.fileowl.model.FileTypeFrequency;
-import com.merryapps.fileowl.model.ScanResult;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,13 +42,9 @@ public class FrequentFileListFragment extends Fragment {
 
         initViews(view);
 
-        if (this.getArguments() != null
-            && this.getArguments().getParcelable("SCAN_RESULT") != null) {
-                ScanResult scanResult = this.getArguments().getParcelable("SCAN_RESULT");
-                assert scanResult != null;
-                ((FrequentFileListAdapter)recyclerView.getAdapter()).setFileTypeFrequencies(scanResult.getMostFrequentFileTypes());
-                recyclerView.getAdapter().notifyDataSetChanged();
-        }
+        ((FrequentFileListAdapter)recyclerView.getAdapter()).setFileTypeFrequencies(
+                backupManager().getLastScanResult().getFrequentFiles());
+        recyclerView.getAdapter().notifyDataSetChanged();
         return view;
     }
 
@@ -61,5 +61,23 @@ public class FrequentFileListFragment extends Fragment {
         recyclerView.setLayoutManager(linearLayoutManager);
         List<FileTypeFrequency> fileTypeFrequencies = new ArrayList<>();
         recyclerView.setAdapter(new FrequentFileListAdapter(getActivity(),fileTypeFrequencies));
+    }
+
+    private FileOwlManagerFactory getFactory() {
+        return (FileOwlManagerFactory)((FileOwlApp) getActivity().getApplication()).getManagerFactory();
+    }
+
+    private BackupManager backupManager() {
+        return getFactory().backupManager();
+    }
+
+    public void share() {
+        Log.d(TAG, "share() called");
+        Intent shareIntent = new Intent();
+        shareIntent.setAction(Intent.ACTION_SEND);
+        shareIntent.putExtra(Intent.EXTRA_SUBJECT, "File Owl: Latest scan statistics");
+        shareIntent.putExtra(Intent.EXTRA_TEXT, UiUtil.shareMessageGenerator(backupManager().getLastScanResult()));
+        shareIntent.setType("text/plain");
+        startActivity(Intent.createChooser(shareIntent, "SEND TO"));
     }
 }

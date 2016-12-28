@@ -23,7 +23,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.merryapps.FileOwlApp;
 import com.merryapps.fileowl.R;
+import com.merryapps.fileowl.model.BackupManager;
+import com.merryapps.fileowl.model.FileOwlManagerFactory;
 
 /**
  * Backs up the Greetings/No data screen
@@ -44,7 +47,6 @@ public class GreetingFragment extends Fragment {
     private static final int REQ_CODE_READ_EXT_STORAGE = 100;
 
     private FloatingActionButton scanFab;
-    private View rootView;
 
     @Nullable
     @Override
@@ -56,7 +58,6 @@ public class GreetingFragment extends Fragment {
     }
 
     private void initViews(View view) {
-        rootView = view;
         scanFab = (FloatingActionButton) view.findViewById(R.id.fragment_greeting_scan_fab_id);
         scanFab.setOnClickListener(newScanFabOcl());
     }
@@ -188,5 +189,23 @@ public class GreetingFragment extends Fragment {
     private boolean isAllowed(String permission) {
         return ContextCompat.checkSelfPermission(this.getActivity(), permission)
                 == PackageManager.PERMISSION_GRANTED;
+    }
+
+    private FileOwlManagerFactory getFactory() {
+        return (FileOwlManagerFactory)((FileOwlApp) getActivity().getApplication()).getManagerFactory();
+    }
+
+    private BackupManager backupManager() {
+        return getFactory().backupManager();
+    }
+
+    public void share() {
+        Log.d(TAG, "share() called");
+        Intent shareIntent = new Intent();
+        shareIntent.setAction(Intent.ACTION_SEND);
+        shareIntent.putExtra(Intent.EXTRA_SUBJECT, "File Owl: Latest scan statistics");
+        shareIntent.putExtra(Intent.EXTRA_TEXT, UiUtil.shareMessageGenerator(backupManager().getLastScanResult()));
+        shareIntent.setType("text/plain");
+        startActivity(Intent.createChooser(shareIntent, "SEND TO"));
     }
 }

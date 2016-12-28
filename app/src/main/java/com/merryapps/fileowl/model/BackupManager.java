@@ -10,10 +10,7 @@ import com.merryapps.fileowl.model.db.ScanStatEntity;
 import com.merryapps.fileowl.model.db.ScanStatEntityDao;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-
-import static com.merryapps.framework.EntityState.LOCAL;
 
 /**
  * Saves, deletes and fetches backup information from database.
@@ -31,12 +28,6 @@ public class BackupManager {
         this.largeFileDao = largeFileDao;
         this.frequentFileDao = frequentFileDao;
         this.scanStatDao = scanStatDao;
-    }
-
-    void loadSeedData() {
-        this.largeFileDao.insert(new LargeFileEntity(1L, "/sdcard/0/large_file_path.avi", 1024L * 1024L * 1024L * 1024L, LOCAL));
-        this.frequentFileDao.insert(new FrequentFileEntity(1L, "avi", 1L, LOCAL));
-        this.scanStatDao.insert(new ScanStatEntity(1L, 1, 1024L * 1024L * 1024L * 1024L, System.currentTimeMillis(), LOCAL));
     }
 
     void saveFileStat(List<FileStat> fileStats) {
@@ -63,34 +54,48 @@ public class BackupManager {
         frequentFileDao.insertInTx(entities);
     }
 
-    void saveScanStat(long totalFilesScanned, long averageFileSize, long scanStartTime) {
+    void saveScanStat(long totalFilesScanned, long averageFileSize, long scanStartTime, ScanStatus status) {
         if (scanStartTime < 0 || totalFilesScanned < 0
                 || averageFileSize < 0) {
             throw new IllegalArgumentException("arguments cannot be < 0");
         }
 
-        scanStatDao.insert(new ScanStatEntity(1L, totalFilesScanned, averageFileSize, scanStartTime));
+        scanStatDao.insert(new ScanStatEntity(1L, totalFilesScanned, averageFileSize, scanStartTime,status));
     }
 
-    public void save(ScanResult scanResult) {
+    public void save(Result result) {
         deleteLastRecords();
-        saveFileStat(scanResult.getFileStats());
-        saveFrequentFiles(scanResult.getMostFrequentFileTypes());
-        saveScanStat(scanResult.getTotalFilesScanned(),
-                scanResult.getAverageFileSize(),
-                new Date().getTime());
+        saveFileStat(result.getLargestFiles());
+        saveFrequentFiles(result.getFrequentFiles());
+        saveScanStat(result.getTotalFilesScanned(),
+                result.getAverageFileSize(),
+                result.getScanTime(),
+                result.getStatus()
+                );
     }
 
     @NonNull
-    public ScanResult getLastScanResult() {
+    public Result getLastScanResult() {
         List<LargeFileEntity> largeFileEntities = largeFileDao.loadAll();
         List<FrequentFileEntity> frequentFileEntities = frequentFileDao.loadAll();
         ScanStatEntity scanStatEntity = scanStatDao.load(1L);
-        return new ScanResult(
-                scanStatEntity == null ? 0 : scanStatEntity.getTotalFilesScanned(),
-                scanStatEntity == null ? 0 : scanStatEntity.getAverageFileSize(),
-                convertToFileStatList(largeFileEntities),
-                convertToFileTypeFrequencyList(frequentFileEntities));
+        Result result = new Result();
+        result.setTotalFilesScanned(scanStatEntity.getTotalFilesScanned());
+        result.setAverageFileSize(scanStatEntity.getAverageFileSize());
+        List<FileStat> fileStats = new ArrayList<>(largeFileEntities.size());
+        for (LargeFileEntity e : largeFileEntities) {
+            fileStats.add(new FileStat(e.getFilePath(), e.getFileSize()));
+        }
+
+        List<FileTypeFrequency> ftfs = new ArrayList<>(frequentFileEntities.size());
+        for (FrequentFileEntity e : frequentFileEntities) {
+            ftfs.add(new FileTypeFrequency(e.getFileType(), e.getFileFrequency()));
+        }
+        result.setScanTime(scanStatEntity.getScanTime());
+        result.setStatus(scanStatEntity.getScanStatus());
+        result.setLargestFiles(fileStats);
+        result.setFrequentFiles(ftfs);
+        return result;
     }
 
     @NonNull

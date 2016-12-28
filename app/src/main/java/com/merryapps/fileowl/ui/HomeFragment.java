@@ -8,7 +8,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
-import android.content.res.ColorStateList;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -32,13 +31,16 @@ import android.widget.TextView;
 
 import com.merryapps.FileOwlApp;
 import com.merryapps.fileowl.R;
+import com.merryapps.fileowl.model.BackupManager;
 import com.merryapps.fileowl.model.FileOwlManagerFactory;
 import com.merryapps.fileowl.model.FileScanService;
-import com.merryapps.fileowl.model.ScanResult;
+import com.merryapps.fileowl.model.FileStat;
+import com.merryapps.fileowl.model.FileTypeFrequency;
+import com.merryapps.fileowl.model.Result;
 import com.merryapps.fileowl.model.ScanStatus;
 
-import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 import static android.content.Context.MODE_PRIVATE;
@@ -71,7 +73,7 @@ public class HomeFragment extends Fragment {
     private CardView averageFileSizeCrdVw;
 
     //scan statistics
-    private TextView lastScanTimeTxtVw;
+    private TextView scanStartTimeTxtVw;
     private TextView scanStatusTxtVw;
     private ProgressBar scanPrgrssBr;
     private Button stopScanBtn;
@@ -90,37 +92,22 @@ public class HomeFragment extends Fragment {
     //average file size
     private TextView averageFileSizeTxtVw;
     private TextView totalFilesScannedTxtVw;
-    private ScanResult scanResult;
 
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        Log.d(TAG, "onCreateView() called with: inflater = [" + inflater + "], container = [" + container + "], savedInstanceState = [" + savedInstanceState + "]");
+        Log.d(TAG, "onCreateView() called");
         View view = inflater.inflate(R.layout.fragment_home, container,false);
 
         initViews(view);
         initFields();
 
         if (savedInstanceState != null) {
-            ScanResult scanResult = (ScanResult) savedInstanceState.getParcelable("SCAN_RESULT");
-            if (scanResult != null) {
-                this.scanResult = scanResult;
-                this.setupViewWithScanResult(scanResult);
+            Result result = (Result) savedInstanceState.getParcelable("SCAN_RESULT");
+            if (result != null) {
+                this.setupViewWithScanResult(result);
             }
-        } else if (this.getArguments() != null) {
-            String message = this.getArguments().getString("MESSAGE");
-            if (message != null && message.equals("SCAN_REQUESTED")) {
-                getActivity().getPreferences(MODE_PRIVATE).edit().putBoolean("IS_FIRST_TIME_SCAN",false).apply();
-                setupViewForNoData();
-                scan();
-            }
-        } else {
-            //not a first time scan
-            ScanResult scanResult = getFactory().backupManager().getLastScanResult();
-            setScanResult(scanResult);
-            setupViewWithScanResult(scanResult);
-
         }
 
         receiver = new FileScanBroadcastReceiver(this);
@@ -132,14 +119,19 @@ public class HomeFragment extends Fragment {
         Log.d(TAG, "onResume() called");
         getActivity().registerReceiver(receiver, new IntentFilter(FileScanService.SCAN_STATUS_ACTION));
 
-        if (scanResult != null) {
-            setupViewWithScanResult(scanResult);
+        if (this.getArguments() != null) {
+            String message = this.getArguments().getString("MESSAGE");
+            if (message != null && message.equals("SCAN_REQUESTED")) {
+                getActivity().getPreferences(MODE_PRIVATE).edit().putBoolean("IS_FIRST_TIME_SCAN",false).apply();
+                setupViewForNoData();
+                scan();
+            }
         } else {
-            ScanResult scanResult = getFactory().backupManager().getLastScanResult();
-            setupViewWithScanResult(scanResult);
+            //not a first time scan
+            setupViewWithScanResult(backupManager().getLastScanResult());
         }
-        super.onResume();
 
+        super.onResume();
     }
 
     @Override
@@ -151,28 +143,16 @@ public class HomeFragment extends Fragment {
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        Log.d(TAG, "onSaveInstanceState() called with: outState = [" + outState + "]");
-        if (scanResult != null) {
-            Log.d(TAG, "onSaveInstanceState: scanResult:" + scanResult);
-            outState.putParcelable("SCAN_RESULT", scanResult);
-        }
-
+        Log.d(TAG, "onSaveInstanceState() called");
+        outState.putParcelable("SCAN_RESULT",backupManager().getLastScanResult());
         super.onSaveInstanceState(outState);
     }
 
     @Override
     public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
-        Log.d(TAG, "onViewStateRestored() called with: savedInstanceState = [" + savedInstanceState + "]");
-        if (savedInstanceState != null) {
-            ScanResult scanResult = (ScanResult) savedInstanceState.getParcelable("SCAN_RESULT");
-            if (scanResult != null) {
-                this.scanResult = scanResult;
-                this.setupViewWithScanResult(scanResult);
-            }
-        } else {
-            ScanResult scanResult = getFactory().backupManager().getLastScanResult();
-            this.scanResult = scanResult;
-            this.setupViewWithScanResult(scanResult);
+        Log.d(TAG, "onViewStateRestored() called");
+        if (savedInstanceState != null && savedInstanceState.getParcelable("SCAN_RESULT") != null) {
+            setupViewWithScanResult(savedInstanceState.getParcelable("SCAN_RESULT"));
         }
         super.onViewStateRestored(savedInstanceState);
     }
@@ -188,7 +168,7 @@ public class HomeFragment extends Fragment {
         averageFileSizeCrdVw = (CardView) view.findViewById(R.id.fragment_home_average_file_size_crdVw_id);
 
         //scan statistics
-        lastScanTimeTxtVw = (TextView) view.findViewById(R.id.lyt_scan_stat_lastScannedValue_txtVw_id);
+        scanStartTimeTxtVw = (TextView) view.findViewById(R.id.lyt_scan_stat_scanStartValue_txtVw_id);
         scanStatusTxtVw = (TextView) view.findViewById(R.id.lyt_scan_stat_stanStatusValue_txtVw_id);
         scanPrgrssBr = (ProgressBar) view.findViewById(R.id.lyt_scan_stat_scanStatus_prgRssBr_id);
         stopScanBtn = (Button) view.findViewById(R.id.lyt_scan_stat_btn_scanStop_id);
@@ -229,32 +209,24 @@ public class HomeFragment extends Fragment {
         largestFilesCrdVw.setVisibility(GONE);
         frequentFilesCrdVw.setVisibility(GONE);
         averageFileSizeCrdVw.setVisibility(GONE);
+        enableActionButtons();
     }
 
-    private void setupViewWithScanResult(ScanResult scanResult) {
-        scanStatusTxtVw.setText(R.string.lyt_scan_scanStatusValue_scanComplete);
-        scanStatusTxtVw.setTextColor(ContextCompat.getColor(getActivity(),R.color.scan_complete_color));
-        setLargestFilesOverviewSection(scanResult);
-        setFrequentFilesOverviewSection(scanResult);
-        setAverageFileSizeSection(scanResult);
-        onScanCompleteFab();
-        onScanCompleteShare();
-    }
-
-    private boolean doesDataExist() {
-        return getActivity().getPreferences(Context.MODE_PRIVATE).getBoolean("DATA_EXISTS", false);
+    private void setupViewWithScanResult(Result result) {
+        updateUi(result);
     }
 
     private FileOwlManagerFactory getFactory() {
         return (FileOwlManagerFactory)((FileOwlApp) getActivity().getApplication()).getManagerFactory();
     }
 
+    private BackupManager backupManager() {
+        return getFactory().backupManager();
+    }
+
     private View.OnClickListener newLargestFilesViewAllOcl() {
         return view -> {
             LargeFileListFragment fragment = new LargeFileListFragment();
-            Bundle arguments = new Bundle();
-            arguments.putParcelable("SCAN_RESULT",scanResult);
-            fragment.setArguments(arguments);
             this.getActivity().getSupportFragmentManager().beginTransaction()
                     .replace(R.id.activity_home_frm_lyt_placeHolder_id, fragment)
                     .addToBackStack("LargeFileListFragment").commit();
@@ -264,9 +236,6 @@ public class HomeFragment extends Fragment {
     private View.OnClickListener newFrequentFilesViewAllOcl() {
         return view -> {
             FrequentFileListFragment fragment = new FrequentFileListFragment();
-            Bundle arguments = new Bundle();
-            arguments.putParcelable("SCAN_RESULT",scanResult);
-            fragment.setArguments(arguments);
             this.getActivity().getSupportFragmentManager().beginTransaction()
                     .replace(R.id.activity_home_frm_lyt_placeHolder_id, fragment)
                     .addToBackStack("FrequentFileListFragment").commit();
@@ -279,10 +248,14 @@ public class HomeFragment extends Fragment {
     }
 
     private View.OnClickListener newStopScanBtnOcl() {
-        return view -> {
+        return view -> stopScan();
+    }
+
+    void stopScan() {
+        if (backupManager().getLastScanResult().getStatus() == ScanStatus.SCANNING_FILE_SYSTEM) {
             getActivity().stopService(new Intent(getActivity(), FileScanService.class));
-            onScanComplete();
-        };
+        }
+
     }
 
     @Override
@@ -301,10 +274,9 @@ public class HomeFragment extends Fragment {
 
     private void scan() {
         Log.v(TAG, "scan: Starting file scan");
-        getActivity().startService(new Intent(getActivity(), FileScanService.class));
-        onScanInProgressShare();
-        onScanInProgressFab();
-        onScanInProgressViewAll();
+        Intent intent = new Intent(getActivity(), FileScanService.class);
+        intent.putExtra("USER_REQUEST", "START_SCAN");
+        getActivity().startService(intent);
     }
 
     /**
@@ -394,53 +366,49 @@ public class HomeFragment extends Fragment {
                 == PackageManager.PERMISSION_GRANTED;
     }
 
-    private void setLargestFilesOverviewSection(@NonNull ScanResult scanResult) {
-        if (scanResult.getFileStats().isEmpty()) {
+    private void setLargestFilesOverviewSection(@NonNull List<FileStat> largestFiles) {
+        if (largestFiles.isEmpty()) {
             largestFileNameTxtVw.setText(R.string.no_data_found);
             largestFilePathTxtVw.setText(R.string.no_data_found);
             largestFileSizeTxtVw.setText(R.string.zero_size);
             largestFilesViewAllBtn.setEnabled(false);
         } else {
-            largestFileNameTxtVw.setText(scanResult.getFileStats().get(0).getName());
-            largestFilePathTxtVw.setText(scanResult.getFileStats().get(0).getAbsolutePath());
-            largestFileSizeTxtVw.setText(scanResult.getFileStats().get(0).getSizeHumanReadable());
+            largestFileNameTxtVw.setText(largestFiles.get(0).getName());
+            largestFilePathTxtVw.setText(largestFiles.get(0).getAbsolutePath());
+            largestFileSizeTxtVw.setText(largestFiles.get(0).getSizeHumanReadable());
             largestFilesViewAllBtn.setEnabled(true);
         }
     }
 
-    private void setFrequentFilesOverviewSection(ScanResult scanResult) {
-        if (scanResult.getMostFrequentFileTypes().isEmpty()) {
+    private void setFrequentFilesOverviewSection(@NonNull List<FileTypeFrequency> frequentFiles) {
+        if (frequentFiles.isEmpty()) {
             mostFrequentFileTypeTxtVw.setText(R.string.no_data_found);
             mostFrequentFileFrequencyTxtVw.setText(R.string.no_data_found);
             frequentFilesViewAllBtn.setEnabled(false);
         } else {
-            String fileType = scanResult.getMostFrequentFileTypes().get(0).getFileType();
+            String fileType = frequentFiles.get(0).getFileType();
             if (!fileType.isEmpty()) {
                 fileType = fileType.toUpperCase();
             }
             mostFrequentFileTypeTxtVw.setText(
                     String.format("%s %s", fileType, getString(R.string.file_type_suffix)));
             mostFrequentFileFrequencyTxtVw.setText(
-                    String.format("%s %s", scanResult.getMostFrequentFileTypes().get(0).getFrequency(),
+                    String.format("%s %s", frequentFiles.get(0).getFrequency(),
                     getString(R.string.file_frequency_suffix))
             );
             frequentFilesViewAllBtn.setEnabled(true);
         }
     }
 
-    private void setAverageFileSizeSection(ScanResult scanResult) {
-        averageFileSizeTxtVw.setText(String.format(Locale.getDefault(),"%s %s", "Average file size:", scanResult.getAverageFileSizeHumanReadable()));
-        totalFilesScannedTxtVw.setText(String.format(Locale.getDefault(),"%s %s","Total files scanned:", scanResult.getTotalFilesScanned()));
-    }
-
-    private void saveScanResult(ScanResult scanResult) {
-        Log.d(TAG, "saveScanResult: saving scan results");
-        getFactory().backupManager().save(scanResult);
-        Log.d(TAG, "saveScanResult: save complete");
+    private void setAverageFileSizeSection(long totalFilesScanned, long averageFileSize) {
+        averageFileSizeTxtVw.setText(String.format(Locale.getDefault(),
+                "%s %s", "Average file size:", UiUtil.getHumanReadableSize(averageFileSize)));
+        totalFilesScannedTxtVw.setText(String.format(Locale.getDefault(),
+                "%s %s","Total files scanned:", totalFilesScanned));
     }
 
     private void onScanComplete() {
-        lastScanTimeTxtVw.setText(DateUtils.getRelativeDateTimeString(
+        scanStartTimeTxtVw.setText(DateUtils.getRelativeDateTimeString(
                 getActivity(),
                 new Date().getTime(),
                 DateUtils.MINUTE_IN_MILLIS,
@@ -452,44 +420,23 @@ public class HomeFragment extends Fragment {
         averageFileSizeCrdVw.setVisibility(VISIBLE);
         scanPrgrssBr.setVisibility(GONE);
         stopScanBtn.setVisibility(GONE);
-        onScanCompleteFab();
-        onScanCompleteShare();
-        onScanCompleteViewAll();
+        enableActionButtons();
     }
 
-    private void onScanInProgressViewAll() {
-        largestFilesViewAllBtn.setEnabled(false);
-        frequentFilesViewAllBtn.setEnabled(false);
-    }
-
-    private void onScanCompleteViewAll() {
+    private void enableActionButtons() {
         largestFilesViewAllBtn.setEnabled(true);
         frequentFilesViewAllBtn.setEnabled(true);
-    }
-
-    private void onScanCompleteFab() {
         scanFab.setEnabled(true);
-        scanFab.setImageDrawable(getActivity().getResources().getDrawable(R.drawable.ic_file_system_search));
-        scanFab.setBackgroundTintList(ColorStateList.valueOf(
-                getResources().getColor(R.color.colorAccent)));
-    }
-
-    private void onScanInProgressFab() {
-        scanFab.setEnabled(false);
-        scanPrgrssBr.setVisibility(VISIBLE);
-        stopScanBtn.setVisibility(VISIBLE);
-    }
-
-    private void onScanCompleteShare() {
         ((HomeActivity)getActivity()).setShareMenuItemEnabled(true);
     }
 
-    private void onScanInProgressShare() {
+    private void disableActionsOnScanInProgress() {
+        largestFilesViewAllBtn.setEnabled(false);
+        frequentFilesViewAllBtn.setEnabled(false);
+        scanFab.setEnabled(false);
+        scanPrgrssBr.setVisibility(VISIBLE);
+        stopScanBtn.setVisibility(VISIBLE);
         ((HomeActivity)getActivity()).setShareMenuItemEnabled(false);
-    }
-
-    void setScanResult(ScanResult scanResult) {
-        this.scanResult = scanResult;
     }
 
     public void share() {
@@ -497,38 +444,54 @@ public class HomeFragment extends Fragment {
         Intent shareIntent = new Intent();
         shareIntent.setAction(Intent.ACTION_SEND);
         shareIntent.putExtra(Intent.EXTRA_SUBJECT, "File Owl: Latest scan statistics");
-        shareIntent.putExtra(Intent.EXTRA_TEXT, shareMessageGenerator());
+        shareIntent.putExtra(Intent.EXTRA_TEXT, UiUtil.shareMessageGenerator(backupManager().getLastScanResult()));
         shareIntent.setType("text/plain");
         startActivity(Intent.createChooser(shareIntent, "SEND TO"));
     }
 
-    private String shareMessageGenerator() {
-        String newLine = "\n";
-        String colon = ":";
-
-        String separator = "------------------------------------------------";
-        return  "Scan statistics" +
-                newLine +
-                separator +
-                newLine +
-                "File Scanned" +
-                colon +
-                scanResult.getTotalFilesScanned() +
-                newLine +
-                "Average file size" +
-                colon +
-                scanResult.getAverageFileSizeHumanReadable() +
-                newLine +
-                "Largest files:" +
-                colon +
-                scanResult.getFileStats().toString() +
-                newLine +
-                "Frequent files:" +
-                colon +
-                scanResult.getMostFrequentFileTypes().toString() +
-                newLine +
-                separator;
-
+    private void updateUi(Result result) {
+        switch (result.getStatus()) {
+            case SCANNING_FILE_SYSTEM: {
+                scanStartTimeTxtVw.setText(R.string.lyt_scan_last_scanned_value_text);
+                scanStatusTxtVw.setText(R.string.lyt_scan_scanStatusValue_scanInProgress);
+                scanStatusTxtVw.setTextColor(ContextCompat.getColor(getActivity(), R.color.scan_in_progress_color));
+                disableActionsOnScanInProgress();
+                break;
+            }
+            case SCAN_ERROR: {
+                scanStartTimeTxtVw.setText(DateUtils.getRelativeDateTimeString(
+                        getActivity(),
+                        result.getScanTime(),
+                        DateUtils.MINUTE_IN_MILLIS,
+                        DateUtils.WEEK_IN_MILLIS, 0));
+                scanStatusTxtVw.setText(R.string.lyt_scan_scanStatusValue_scanError);
+                scanStatusTxtVw.setTextColor(ContextCompat.getColor(getActivity(), R.color.scan_error_color));
+                enableActionButtons();
+                scanPrgrssBr.setVisibility(GONE);
+                stopScanBtn.setVisibility(GONE);
+                break;
+            }
+            case SCAN_CANCELLED: {
+                scanStartTimeTxtVw.setText(DateUtils.getRelativeDateTimeString(
+                        getActivity(),
+                        result.getScanTime(),
+                        DateUtils.MINUTE_IN_MILLIS,
+                        DateUtils.WEEK_IN_MILLIS, 0));
+                scanStatusTxtVw.setText(R.string.lyt_scan_scanStatusValue_scanCancelled);
+                scanStatusTxtVw.setTextColor(ContextCompat.getColor(getActivity(), R.color.scan_error_color));
+                enableActionButtons();
+                scanPrgrssBr.setVisibility(GONE);
+                stopScanBtn.setVisibility(GONE);
+                break;
+            }
+            case SCAN_COMPLETE: {
+                onScanComplete();
+                break;
+            }
+        }
+        setLargestFilesOverviewSection(result.getLargestFiles());
+        setFrequentFilesOverviewSection(result.getFrequentFiles());
+        setAverageFileSizeSection(result.getTotalFilesScanned(),result.getAverageFileSize());
     }
 
     /**
@@ -549,70 +512,12 @@ public class HomeFragment extends Fragment {
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            Serializable scanStatusSerializable = intent.getExtras().getSerializable(FileScanService.EXTRA_SCAN_STATUS);
+            Parcelable parcelable = intent.getExtras().getParcelable(FileScanService.EXTRA_SCAN_RESULT);
 
-            if (scanStatusSerializable != null) {
-                ScanStatus status = (ScanStatus) scanStatusSerializable;
-                Log.d(TAG, "onReceive: scanStatus:" + status);
-
-                if (status == ScanStatus.SCANNING_FILE_SYSTEM) {
-                    homeFragment.lastScanTimeTxtVw.setText(R.string.lyt_scan_last_scanned_value_text);
-                    homeFragment.scanStatusTxtVw.setText(R.string.lyt_scan_scanStatusValue_scanInProgress);
-                    homeFragment.scanStatusTxtVw.setTextColor(ContextCompat.getColor(homeFragment.getActivity(), R.color.scan_in_progress_color));
-                    homeFragment.onScanInProgressFab();
-                    homeFragment.onScanInProgressShare();
-                    homeFragment.onScanInProgressViewAll();
-                    return;
-                }
-
-                Parcelable scanResultParcelable = intent.getExtras().getParcelable(FileScanService.EXTRA_SCAN_RESULT);
-                ScanResult scanResult = null;
-                if (scanResultParcelable != null) {
-                    scanResult = (ScanResult) scanResultParcelable;
-                    Log.d(TAG, "onReceive: scanResult:" + scanResult);
-                }
-
-                if (status == ScanStatus.SCAN_ERROR) {
-                    homeFragment.lastScanTimeTxtVw.setText(DateUtils.getRelativeDateTimeString(
-                            homeFragment.getActivity(),
-                            new Date().getTime(),
-                            DateUtils.MINUTE_IN_MILLIS,
-                            DateUtils.WEEK_IN_MILLIS, 0));
-                    homeFragment.scanStatusTxtVw.setText(R.string.lyt_scan_scanStatusValue_scanError);
-                    homeFragment.scanStatusTxtVw.setTextColor(ContextCompat.getColor(homeFragment.getActivity(), R.color.scan_error_color));
-                    homeFragment.onScanComplete();
-                    return;
-                }
-
-                if (status == ScanStatus.SCAN_CANCELLED) {
-                    homeFragment.lastScanTimeTxtVw.setText(DateUtils.getRelativeDateTimeString(
-                            homeFragment.getActivity(),
-                            new Date().getTime(),
-                            DateUtils.MINUTE_IN_MILLIS,
-                            DateUtils.WEEK_IN_MILLIS, 0));
-                    homeFragment.onScanComplete();
-                    homeFragment.scanStatusTxtVw.setText(R.string.lyt_scan_scanStatusValue_scanCancelled);
-                    homeFragment.scanStatusTxtVw.setTextColor(ContextCompat.getColor(homeFragment.getActivity(), R.color.scan_error_color));
-                    return;
-                }
-
-                if (status == ScanStatus.SCAN_COMPLETE) {
-                    homeFragment.onScanComplete();
-                    homeFragment.onScanCompleteShare();
-                    homeFragment.onScanCompleteViewAll();
-                }
-
-                assert scanResult != null;
-                homeFragment.setLargestFilesOverviewSection(scanResult);
-                homeFragment.setFrequentFilesOverviewSection(scanResult);
-                homeFragment.setAverageFileSizeSection(scanResult);
-                homeFragment.saveScanResult(scanResult);
-                homeFragment.setScanResult(scanResult);
-
-
-            }
-
-            //this.progressBar.setProgress(anInt);
+            Result result = (Result) parcelable;
+            assert result != null;
+            Log.d(TAG, "onReceive: result:" + result);
+            homeFragment.updateUi(result);
         }
     }
 }

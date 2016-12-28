@@ -1,17 +1,21 @@
 package com.merryapps.fileowl.ui;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.merryapps.FileOwlApp;
 import com.merryapps.fileowl.R;
-import com.merryapps.fileowl.model.ScanResult;
+import com.merryapps.fileowl.model.BackupManager;
+import com.merryapps.fileowl.model.FileOwlManagerFactory;
 
 import java.util.ArrayList;
 
@@ -37,13 +41,10 @@ public class LargeFileListFragment extends Fragment {
 
         initViews(view);
 
-          if (this.getArguments() != null
-            && this.getArguments().getParcelable("SCAN_RESULT") != null) {
-            ScanResult scanResult = this.getArguments().getParcelable("SCAN_RESULT");
-            assert scanResult != null;
-            ((LargeFileListAdapter)recyclerView.getAdapter()).setFileStats(scanResult.getFileStats());
-            recyclerView.getAdapter().notifyDataSetChanged();
-        }
+        ((LargeFileListAdapter)recyclerView.getAdapter()).setFileStats(
+                backupManager().getLastScanResult().getLargestFiles());
+        recyclerView.getAdapter().notifyDataSetChanged();
+
         return view;
     }
 
@@ -59,5 +60,23 @@ public class LargeFileListFragment extends Fragment {
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.setAdapter(new LargeFileListAdapter(getActivity(),new ArrayList<>()));
+    }
+
+    private FileOwlManagerFactory getFactory() {
+        return (FileOwlManagerFactory)((FileOwlApp) getActivity().getApplication()).getManagerFactory();
+    }
+
+    private BackupManager backupManager() {
+        return getFactory().backupManager();
+    }
+
+    public void share() {
+        Log.d(TAG, "share() called");
+        Intent shareIntent = new Intent();
+        shareIntent.setAction(Intent.ACTION_SEND);
+        shareIntent.putExtra(Intent.EXTRA_SUBJECT, "File Owl: Latest scan statistics");
+        shareIntent.putExtra(Intent.EXTRA_TEXT, UiUtil.shareMessageGenerator(backupManager().getLastScanResult()));
+        shareIntent.setType("text/plain");
+        startActivity(Intent.createChooser(shareIntent, "SEND TO"));
     }
 }
