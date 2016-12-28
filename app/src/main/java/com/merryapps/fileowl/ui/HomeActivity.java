@@ -60,10 +60,12 @@ public class HomeActivity extends AppCompatActivity {
             menu.removeItem(1);
             menu.add(0, 1, Menu.NONE, "Share").setIcon(R.drawable.ic_share)
                     .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+            menu.findItem(1).setEnabled(true);
         } else {
             menu.removeItem(1);
             menu.add(0, 1, Menu.NONE, "Share").setIcon(R.drawable.ic_share_disabled)
                     .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+            menu.findItem(1).setEnabled(false);
         }
         return super.onPrepareOptionsMenu(menu);
     }
@@ -93,8 +95,11 @@ public class HomeActivity extends AppCompatActivity {
         if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
             getSupportFragmentManager().popBackStackImmediate();
         } else {
-            ((HomeFragment) getSupportFragmentManager().getFragments().get(0)).stopScan();
-            finish();
+            Fragment fragment = getSupportFragmentManager().getFragments().get(0);
+            if (fragment != null) {
+                ((HomeFragment) fragment).stopScan();
+                finish();
+            }
         }
     }
 
@@ -113,6 +118,8 @@ public class HomeActivity extends AppCompatActivity {
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.activity_home_frm_lyt_placeHolder_id, new GreetingFragment())
                     .commit();
+            shareMenuItemEnabled=false;
+            invalidateOptionsMenu();
         } else {
             homeFragment = new HomeFragment();
             getSupportFragmentManager().beginTransaction()

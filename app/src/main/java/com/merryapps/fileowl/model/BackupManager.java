@@ -10,6 +10,7 @@ import com.merryapps.fileowl.model.db.ScanStatEntity;
 import com.merryapps.fileowl.model.db.ScanStatEntityDao;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -80,8 +81,15 @@ public class BackupManager {
         List<FrequentFileEntity> frequentFileEntities = frequentFileDao.loadAll();
         ScanStatEntity scanStatEntity = scanStatDao.load(1L);
         Result result = new Result();
-        result.setTotalFilesScanned(scanStatEntity.getTotalFilesScanned());
-        result.setAverageFileSize(scanStatEntity.getAverageFileSize());
+        if (scanStatEntity == null) {
+            result.setTotalFilesScanned(0);
+            result.setAverageFileSize(0);
+            result.setScanTime(new Date().getTime());
+            result.setStatus(ScanStatus.SCAN_COMPLETE);
+        } else {
+            result.setTotalFilesScanned(scanStatEntity.getTotalFilesScanned());
+            result.setAverageFileSize(scanStatEntity.getAverageFileSize());
+        }
         List<FileStat> fileStats = new ArrayList<>(largeFileEntities.size());
         for (LargeFileEntity e : largeFileEntities) {
             fileStats.add(new FileStat(e.getFilePath(), e.getFileSize()));
@@ -91,8 +99,7 @@ public class BackupManager {
         for (FrequentFileEntity e : frequentFileEntities) {
             ftfs.add(new FileTypeFrequency(e.getFileType(), e.getFileFrequency()));
         }
-        result.setScanTime(scanStatEntity.getScanTime());
-        result.setStatus(scanStatEntity.getScanStatus());
+
         result.setLargestFiles(fileStats);
         result.setFrequentFiles(ftfs);
         return result;
