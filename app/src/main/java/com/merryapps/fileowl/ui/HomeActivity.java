@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -91,6 +92,7 @@ public class HomeActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
+        Log.d(TAG, "onBackPressed() called");
 
         if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
             getSupportFragmentManager().popBackStackImmediate();
@@ -98,8 +100,8 @@ public class HomeActivity extends AppCompatActivity {
             Fragment fragment = getSupportFragmentManager().getFragments().get(0);
             if (fragment != null) {
                 ((HomeFragment) fragment).stopScan();
-                finish();
             }
+            finish();
         }
     }
 
